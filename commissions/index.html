@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Commissions — Abrham Moges</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --commissions-gradient: linear-gradient(to right, #d1d1d1, #4a4a4a);
+        --page-fade-ms: 1400;
+        --page-fade-out-ms: 1250;
+        --commissions-corner-top: clamp(1.5rem, 4.2vh, 2.8rem);
+        --cube-nudge-y: clamp(1.65rem, 4.8vh, 3.35rem);
+        --cube-nudge-x: clamp(1.35rem, 4.5vw, 2.85rem);
+        --commissions-main-top: calc(var(--commissions-corner-top) + 2.5rem + var(--cube-nudge-y));
+        /* Retro CRT-style soft focus + cool cast (whole viewport) */
+        --retro-gaussian-blur: 0.95px;
+        --retro-blue-wash: rgba(100, 155, 255, 0.055);
+        /* Sequential scale-in: each tile finishes before the next starts */
+        --commission-intro-pop-ms: 620;
+        --commission-intro-ease: cubic-bezier(0.34, 1.15, 0.53, 1);
+      }
+
+      @keyframes commission-intro-scale {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: var(--commissions-gradient);
+        background-color: #8a8a8a;
+        padding: clamp(1rem, 4vw, 2rem);
+        opacity: 1;
+        transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
+        position: relative;
+      }
+
+      @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+        body::after {
+          content: "";
+          position: fixed;
+          inset: 0;
+          z-index: 50;
+          pointer-events: none;
+          background: var(--retro-blue-wash);
+          -webkit-backdrop-filter: blur(var(--retro-gaussian-blur)) saturate(0.96);
+          backdrop-filter: blur(var(--retro-gaussian-blur)) saturate(0.96);
+        }
+      }
+
+      body.is-page-ready {
+        opacity: 1;
+      }
+
+      body.is-page-leaving {
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-out-ms) * 1ms) ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body {
+          transition-duration: 0.01ms;
+        }
+        body.is-page-leaving {
+          transition-duration: 0.01ms;
+        }
+        body::after {
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+          background: transparent;
+        }
+      }
+
+      .commissions-main {
+        position: fixed;
+        top: var(--commissions-main-top);
+        left: calc(clamp(0.9rem, 2.4vw, 1.8rem) + var(--cube-nudge-x));
+        right: auto;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        margin: 0;
+        overflow: visible;
+      }
+
+      .commissions-cube-row {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        gap: clamp(0, 0.45vw, 0.35rem);
+      }
+
+      .commissions-tile {
+        flex: 0 0 auto;
+        width: min(300px, 50vmin);
+        height: min(300px, 50vmin);
+        position: relative;
+        z-index: 1;
+        transform-origin: center center;
+        overflow: visible;
+      }
+
+      .commissions-tile-pop {
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
+        will-change: transform;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .commissions-tile-pop {
+          transform: scale(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .commissions-tile-pop {
+          animation: none !important;
+          transform: scale(1) !important;
+          will-change: auto;
+        }
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(1) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) 0ms both;
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(2) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 1ms) both;
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(3) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 2ms) both;
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(4) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 3ms) both;
+      }
+
+      body.commissions-intro-on.commissions-intro-finished .commissions-tile-pop {
+        animation: none;
+        transform: scale(1);
+        will-change: auto;
+      }
+
+      .commissions-tile:not(:first-child) {
+        margin-inline-start: clamp(-1.1rem, -2.4vw, -0.45rem);
+      }
+
+      .commissions-tile iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+      }
+
+      /* Keep tiles fully visible (no parent opacity animation) so nested iframes paint reliably. */
+      .commissions-cube-row > .commissions-tile {
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        body.commissions-intro-finished .commissions-tile:hover {
+          z-index: 8;
+        }
+
+        body.commissions-intro-finished .commissions-tile:hover .commissions-tile-pop {
+          transform: scale(1.09);
+          transition: transform 0.38s cubic-bezier(0.33, 1, 0.53, 1);
+        }
+
+        body.commissions-intro-finished .commissions-tile:not(:hover) .commissions-tile-pop {
+          transition: transform 0.38s cubic-bezier(0.33, 1, 0.53, 1);
+        }
+      }
+
+      .commissions-corner-title,
+      .commissions-corner-back {
+        position: fixed;
+        top: var(--commissions-corner-top);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1;
+        z-index: 5;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      .commissions-corner-title {
+        right: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #c8ca47;
+      }
+
+      .commissions-corner-back {
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #f5f5f5;
+        text-decoration: none;
+      }
+
+      .commissions-corner-back:hover {
+        opacity: 0.9;
+      }
+
+      .commissions-corner-back:focus-visible {
+        outline: 1px solid #fff;
+        outline-offset: 4px;
+      }
+
+      .commissions-footer {
+        position: fixed;
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        bottom: clamp(0.65rem, 2.2vh, 1.35rem);
+        margin: 0;
+        width: auto;
+        text-align: left;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.2;
+        color: rgba(255, 255, 255, 0.9);
+        z-index: 4;
+      }
+    </style>
+  </head>
+  <body class="is-page-ready">
+    <a class="commissions-corner-back" href="../home/">Back</a>
+    <p class="commissions-corner-title">Commissions</p>
+
+    <main class="commissions-main" role="main">
+      <div class="commissions-cube-row">
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-cube-iframe"
+              title="Tommy Richman Coyotye cube"
+              src="../tommy-richman-coyotye-cube_rect.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-park-iframe"
+              title="106 &amp; Park live 3D"
+              src="../106_park_live_3d_fixed.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-bud-iframe"
+              title="Budweiser 3D"
+              src="../budweiser_3d_clean.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-crown-iframe"
+              title="Crown Royal bar mat 3D"
+              src="../crown_royal_mat_3d.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="commissions-footer">© Abrham Moges</footer>
+    <script>
+      (function () {
+        var body = document.body;
+        var reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var fadeOutMs = reduced ? 0 : 1250;
+
+        var introPopMs =
+          parseFloat(
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--commission-intro-pop-ms")
+              .trim()
+          ) || 620;
+        var commissionIntroFinishTimer = null;
+
+        function scheduleCommissionIntroFinish() {
+          if (reduced) return;
+          window.clearTimeout(commissionIntroFinishTimer);
+          commissionIntroFinishTimer = window.setTimeout(function () {
+            body.classList.add("commissions-intro-finished");
+          }, introPopMs * 4 + 32);
+        }
+
+        function startCommissionIntro() {
+          if (reduced) {
+            body.classList.remove("commissions-intro-on");
+            body.classList.add("commissions-intro-finished");
+            return;
+          }
+          body.classList.remove(
+            "commissions-intro-finished",
+            "commissions-intro-on"
+          );
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.classList.add("commissions-intro-on");
+              scheduleCommissionIntroFinish();
+            });
+          });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", startCommissionIntro);
+        } else {
+          startCommissionIntro();
+        }
+
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            body.classList.remove("is-page-leaving");
+            body.classList.add("is-page-ready");
+            startCommissionIntro();
+          }
+        });
+
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest("a");
+          if (!a) return;
+          var tgt = (a.getAttribute("target") || "_self").trim().toLowerCase();
+          if (tgt === "_blank" || tgt === "_top") return;
+          if (a.download) return;
+          var raw = a.getAttribute("href");
+          if (raw == null || raw === "") return;
+          if (/^\s*javascript:/i.test(raw)) return;
+          if (/^\s*mailto:/i.test(raw) || /^\s*tel:/i.test(raw)) return;
+
+          var url;
+          try {
+            url = new URL(a.href, window.location.href);
+          } catch (_) {
+            return;
+          }
+
+          var sameDocument =
+            url.origin === location.origin &&
+            url.pathname === location.pathname &&
+            url.search === location.search;
+          if (sameDocument) return;
+
+          e.preventDefault();
+          var dest = a.href;
+          window.clearTimeout(commissionIntroFinishTimer);
+          body.classList.remove("is-page-ready");
+          body.classList.add("is-page-leaving");
+
+          function go() {
+            window.location.href = dest;
+          }
+
+          if (reduced) {
+            go();
+            return;
+          }
+
+          var finished = false;
+          function finish() {
+            if (finished) return;
+            finished = true;
+            go();
+          }
+
+          body.addEventListener(
+            "transitionend",
+            function onEnd(ev) {
+              if (ev.target !== body || ev.propertyName !== "opacity") return;
+              finish();
+            },
+            { once: true }
+          );
+          window.setTimeout(finish, fadeOutMs + 200);
+        });
+      })();
+    </script>
+  </body>
+</html>

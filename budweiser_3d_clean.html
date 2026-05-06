@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Budweiser — 3D preview</title>
+    <style>
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: transparent;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #wrap {
+        width: 100%;
+        max-width: 720px;
+        aspect-ratio: 1 / 1;
+        overflow: visible;
+      }
+      #c {
+        display: block;
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap"><canvas id="c"></canvas></div>
+
+    <script src="lib/three.r128.min.js"></script>
+    <script>
+      const wrap = document.getElementById("wrap");
+      const canvas = document.getElementById("c");
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+      camera.position.set(0, 0, 8);
+      camera.lookAt(0, 0, 0);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+      const d1 = new THREE.DirectionalLight(0xffffff, 1.0);
+      d1.position.set(4, 4, 8);
+      scene.add(d1);
+      const d2 = new THREE.DirectionalLight(0xff2222, 0.3);
+      d2.position.set(-4, 0, 3);
+      scene.add(d2);
+
+      const fc = document.createElement("canvas");
+      fc.width = 1024;
+      fc.height = 450;
+      const ctx = fc.getContext("2d");
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, 1024, 450);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.moveTo(0, 225);
+      ctx.lineTo(35, 22);
+      ctx.lineTo(472, 145);
+      ctx.lineTo(990, 5);
+      ctx.lineTo(1024, 225);
+      ctx.lineTo(990, 442);
+      ctx.lineTo(472, 305);
+      ctx.lineTo(35, 428);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#e8000b";
+      ctx.beginPath();
+      ctx.moveTo(20, 225);
+      ctx.lineTo(65, 55);
+      ctx.lineTo(472, 168);
+      ctx.lineTo(960, 32);
+      ctx.lineTo(1002, 225);
+      ctx.lineTo(960, 415);
+      ctx.lineTo(472, 282);
+      ctx.lineTo(65, 405);
+      ctx.closePath();
+      ctx.fill();
+
+      const sh = ctx.createLinearGradient(0, 32, 0, 225);
+      sh.addColorStop(0, "rgba(255,255,255,0.18)");
+      sh.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = sh;
+      ctx.beginPath();
+      ctx.moveTo(20, 225);
+      ctx.lineTo(65, 55);
+      ctx.lineTo(472, 168);
+      ctx.lineTo(960, 32);
+      ctx.lineTo(1002, 225);
+      ctx.lineTo(512, 225);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "bold italic 110px Georgia,serif";
+      ctx.fillStyle = "rgba(80,0,0,0.6)";
+      ctx.fillText("Budweiser", 514, 230);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText("Budweiser", 512, 226);
+      ctx.restore();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 22px Arial";
+      ctx.fillText("®", 810, 308);
+
+      const tex = new THREE.CanvasTexture(fc);
+
+      function p(x, y) {
+        return [(x - 512) / 145, -(y - 225) / 145];
+      }
+      const sp = [
+        p(20, 225),
+        p(65, 55),
+        p(472, 168),
+        p(960, 32),
+        p(1002, 225),
+        p(960, 415),
+        p(472, 282),
+        p(65, 405),
+      ];
+      let mnX = Infinity,
+        mxX = -Infinity,
+        mnY = Infinity,
+        mxY = -Infinity;
+      sp.forEach(([x, y]) => {
+        mnX = Math.min(mnX, x);
+        mxX = Math.max(mxX, x);
+        mnY = Math.min(mnY, y);
+        mxY = Math.max(mxY, y);
+      });
+
+      const shape = new THREE.Shape();
+      shape.moveTo(sp[0][0], sp[0][1]);
+      for (let i = 1; i < sp.length; i++) shape.lineTo(sp[i][0], sp[i][1]);
+      shape.closePath();
+
+      const sideGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false });
+      const sideMesh = new THREE.Mesh(sideGeo, [
+        new THREE.MeshLambertMaterial({ color: 0x7a0000 }),
+        new THREE.MeshLambertMaterial({ color: 0x3a0000 }),
+        new THREE.MeshLambertMaterial({ color: 0x3a0000 }),
+      ]);
+      sideMesh.position.z = -0.25;
+
+      const faceGeo = new THREE.ShapeGeometry(shape);
+
+      const posA = faceGeo.attributes.position;
+      const uvA = faceGeo.attributes.uv;
+      const rX = mxX - mnX;
+      const rY = mxY - mnY;
+      for (let i = 0; i < posA.count; i++) {
+        uvA.setXY(i, (posA.getX(i) - mnX) / rX, (posA.getY(i) - mnY) / rY);
+      }
+      uvA.needsUpdate = true;
+
+      const faceMesh = new THREE.Mesh(faceGeo, new THREE.MeshBasicMaterial({ map: tex }));
+      faceMesh.position.z = 0.255;
+
+      const group = new THREE.Group();
+      group.rotation.y = 0.52;
+      group.rotation.x = 0.06;
+      group.add(sideMesh);
+      group.add(faceMesh);
+      group.scale.set(0.62, 0.62, 0.62);
+      scene.add(group);
+
+      const reduced =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const HOVER_PERIOD_S = 3.2;
+      const yAmp = 0.125;
+      const yMid = 0;
+      let t0 = performance.now();
+
+      function resize() {
+        const rect = wrap.getBoundingClientRect();
+        const dim = rect.width || 1;
+        const h = rect.height || dim;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.setSize(dim, h, false);
+        camera.aspect = dim / Math.max(h, 1);
+        camera.updateProjectionMatrix();
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!reduced) {
+          const elapsed = (performance.now() - t0) / 1000;
+          const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
+          group.position.y = yMid + yAmp * Math.cos(phase);
+        } else {
+          group.position.y = 0;
+        }
+        renderer.render(scene, camera);
+      }
+
+      if (typeof ResizeObserver !== "undefined") {
+        new ResizeObserver(() => resize()).observe(wrap);
+      } else {
+        window.addEventListener("resize", resize);
+      }
+      resize();
+      animate();
+    </script>
+  </body>
+</html>

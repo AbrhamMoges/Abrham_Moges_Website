@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Splash</title>
+    <style>
+      :root {
+        color-scheme: only dark;
+        /* Same Gaussian blur as nav on /home/ (--splash-blur matches --nav-blur) */
+        --splash-blur: 0.65px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: #000;
+        overflow: hidden;
+        font-family: Arial, Helvetica, sans-serif;
+        transition: opacity 800ms ease;
+      }
+
+      body.is-exiting {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .splash {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: #000;
+        z-index: 0;
+      }
+
+      .splash video {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        min-width: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+        opacity: 1;
+        background: #000;
+        z-index: 1;
+        filter: blur(var(--splash-blur));
+      }
+
+      .splash.is-exiting video {
+        transform: scale(0);
+        transition: transform 800ms ease-in-out;
+        transform-origin: center;
+      }
+
+      #splash-error {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        text-align: center;
+        color: #e6e6e6;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        background: #000;
+      }
+
+      #splash-error.is-visible {
+        display: flex;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body.is-exiting {
+          transition: none;
+        }
+        .splash.is-exiting video {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="splash">
+      <video
+        id="splash-video"
+        poster="./ps2-startup-poster.jpg"
+        preload="auto"
+        autoplay
+        muted
+        playsinline
+        disablePictureInPicture
+        aria-label="Intro video. Skips to home when finished, or click while playing to skip."
+      >
+        <source src="./ps2-startup-splash.mp4" type="video/mp4" />
+      </video>
+    </main>
+    <div id="splash-error" role="alert"></div>
+    <script>
+      (function () {
+        var nextUrl = "./home/";
+        var exitMs = 800;
+        var video = document.getElementById("splash-video");
+        var splash = document.querySelector(".splash");
+        var errEl = document.getElementById("splash-error");
+
+        function prefersReducedMotion() {
+          return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        }
+
+        function showError(msg) {
+          if (!errEl) return;
+          errEl.textContent = msg;
+          errEl.classList.add("is-visible");
+        }
+
+        function goNext() {
+          if (!splash || splash.classList.contains("is-exiting")) return;
+          var ms = prefersReducedMotion() ? 0 : exitMs;
+          splash.classList.add("is-exiting");
+          document.body.classList.add("is-exiting");
+          window.setTimeout(function () {
+            window.location.href = nextUrl;
+          }, ms);
+        }
+
+        if (!video) return;
+
+        function tryPlay() {
+          video.muted = true;
+          var p = video.play();
+          if (p && typeof p.catch === "function") {
+            p.catch(function () {});
+          }
+        }
+
+        tryPlay();
+        video.addEventListener("loadeddata", tryPlay);
+        video.addEventListener("canplay", tryPlay);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) tryPlay();
+        });
+
+        video.addEventListener("error", function () {
+          var code = video.error ? video.error.code : 0;
+          showError(
+            "The splash video could not load (error " +
+              code +
+              "). Serve this folder over HTTP (for example: python3 -m http.server) and open http://localhost:8000/ — opening index.html directly from the disk often breaks video."
+          );
+        });
+
+        video.addEventListener("ended", function () {
+          goNext();
+        });
+
+        video.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+        });
+
+        video.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (video.paused) {
+            tryPlay();
+            return;
+          }
+          goNext();
+        });
+        video.addEventListener("keydown", function (e) {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (video.paused) {
+              tryPlay();
+              return;
+            }
+            goNext();
+          }
+        });
+        video.setAttribute("tabindex", "0");
+      })();
+    </script>
+  </body>
+</html>

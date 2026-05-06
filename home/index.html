@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Abrham Moges — Portfolio</title>
+    <style>
+      :root {
+        color-scheme: only dark;
+        --bg: #000;
+        --nav-fg: #7a9eb8;
+        --nav-font-size: 16pt;
+        --nav-blur: 0.65px;
+        --page-fade-ms: 1400;
+        --page-fade-out-ms: 1250;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        background: var(--bg);
+        font-family: system-ui, -apple-system, Segoe UI, Arial, Helvetica, sans-serif;
+        font-size: 1rem;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
+      }
+
+      body.is-page-ready { opacity: 1; }
+
+      body.is-page-leaving {
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-out-ms) * 1ms) ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body { transition-duration: 0.01ms; }
+        body.is-page-leaving { transition-duration: 0.01ms; }
+      }
+
+      .hero-rail {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        align-content: center;
+        gap: clamp(0rem, 0.35vw, 0.35rem);
+        padding: clamp(1rem, 4vw, 2rem);
+        min-height: 0;
+        width: 100%;
+        position: relative;
+      }
+
+      .dual-motion-ring {
+        flex: 0 0 auto;
+        z-index: 0;
+        pointer-events: none;
+        transform: translateX(clamp(1.35rem, 2.75vw, 3.35rem));
+      }
+
+      .dual-motion-ring canvas {
+        display: block;
+        border-radius: 8px;
+        background: #000;
+        width: min(680px, calc(100vw - 120px));
+        height: auto;
+      }
+
+      .home-tommy-cube {
+        flex: 0 0 auto;
+        z-index: 0;
+        align-self: center;
+        width: min(260px, min(52vmin, calc(100vw - 140px)));
+        height: min(260px, min(52vmin, calc(100vw - 140px)));
+      }
+
+      .home-tommy-cube iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        border-radius: 8px;
+      }
+
+      .gallery-wrap {
+        flex: 0 0 auto;
+        width: fit-content;
+        max-width: 100%;
+      }
+
+      .gallery {
+        flex: 0 0 auto;
+        z-index: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: var(--nav-font-size);
+        font-weight: 400;
+        line-height: 1;
+        color: var(--nav-fg);
+        gap: 1.45em;
+        list-style: none;
+        filter: blur(var(--nav-blur));
+        transform: translateX(calc(-1 * clamp(5.15rem, 20vw, 14rem)));
+      }
+
+      .gallery a {
+        color: inherit;
+        text-decoration: none;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .gallery a:hover { opacity: 0.88; }
+      .gallery a:focus-visible {
+        outline: 1px solid var(--nav-fg);
+        outline-offset: 4px;
+      }
+
+      .gallery:has(a:focus-visible) { filter: none; }
+
+      @media (max-width: 780px) {
+        .gallery {
+          transform: translateX(calc(-1 * clamp(1.15rem, 8vw, 3.35rem)));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero-rail">
+      <div class="dual-motion-ring" aria-hidden="true">
+        <canvas id="dualMotionRingCanvas" width="680" height="480"></canvas>
+      </div>
+      <div class="home-tommy-cube">
+        <iframe
+          title="Tommy Richman Coyotye cube"
+          src="../tommy-richman-coyotye-cube_rect.html"
+          width="260"
+          height="260"
+          loading="eager"
+        ></iframe>
+      </div>
+      <main class="gallery-wrap" role="main">
+        <nav class="gallery" aria-label="Primary">
+          <a id="about" href="../about/">About Me</a>
+          <a id="graphics" href="../graphics/">Graphics</a>
+          <a id="commissions" href="../commissions/">Commisions</a>
+          <a id="contact" href="#">Contact Me</a>
+        </nav>
+      </main>
+    </div>
+
+    <script>
+      const dmCv = document.getElementById("dualMotionRingCanvas");
+      const dmCtx = dmCv.getContext("2d");
+      const dmW = 680, dmH = 480;
+      const dmCx = dmW * 0.36, dmCy = dmH * 0.48;
+
+      const dmNUM = 8;
+      const dmRING_R = 108;
+      const dmFOV = 340;
+      const dmTILT = 0.18;
+
+      const dmOrbs = Array.from({ length: dmNUM }, (_, i) => ({
+        theta: (i / dmNUM) * Math.PI * 2,
+        size: 10,
+        bright: 0.82,
+        pulseP: (i / dmNUM) * Math.PI * 2,
+        trail: [],
+      }));
+
+      const dmTRAIL_LEN = 32;
+      const dmY_SPIN = 0.006;
+      const dmTRAVEL = 0.012;
+
+      let dmYAngle = 0;
+      let dmT = 0;
+
+      function dmGet3D(theta) {
+        const lx = Math.cos(theta) * dmRING_R;
+        const ly = Math.sin(theta) * dmRING_R;
+        const tx = lx;
+        const ty = ly * Math.cos(dmTILT);
+        const tz = ly * Math.sin(dmTILT);
+        const x3 = tx * Math.cos(dmYAngle) + tz * Math.sin(dmYAngle);
+        const y3 = ty;
+        const z3 = -tx * Math.sin(dmYAngle) + tz * Math.cos(dmYAngle);
+        return { x3, y3, z3 };
+      }
+
+      function dmProject(x3, y3, z3) {
+        const scale = dmFOV / (dmFOV + z3);
+        return { x: dmCx + x3 * scale, y: dmCy + y3 * scale, scale, z3 };
+      }
+
+      const dmGAP_CENTER = 0.0;
+      const dmGAP_HALF = 0.52;
+
+      function dmGapFade(theta) {
+        const nt = ((theta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+        const gc = ((dmGAP_CENTER % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+        let diff = Math.abs(nt - gc);
+        if (diff > Math.PI) diff = Math.PI * 2 - diff;
+        if (diff < dmGAP_HALF) return Math.max(0, diff / dmGAP_HALF);
+        return 1;
+      }
+
+      function dmDrawOrb(x, y, size, bright, scale, z3) {
+        const depth = (z3 + dmRING_R) / (dmRING_R * 2);
+        const b = bright * (0.28 + depth * 0.72);
+        const sz = size * scale;
+
+        const g = dmCtx.createRadialGradient(x, y, 0, x, y, sz * 6);
+        g.addColorStop(0, `rgba(215,240,255,${b})`);
+        g.addColorStop(0.15, `rgba(115,188,255,${b * 0.72})`);
+        g.addColorStop(0.48, `rgba(38,112,232,${b * 0.2})`);
+        g.addColorStop(1, "rgba(4,28,158,0)");
+        dmCtx.beginPath(); dmCtx.arc(x, y, sz * 6, 0, Math.PI * 2); dmCtx.fillStyle = g; dmCtx.fill();
+
+        const g2 = dmCtx.createRadialGradient(x, y, 0, x, y, sz * 2);
+        g2.addColorStop(0, `rgba(245,252,255,${b})`);
+        g2.addColorStop(0.5, `rgba(155,210,255,${b * 0.55})`);
+        g2.addColorStop(1, "rgba(50,130,255,0)");
+        dmCtx.beginPath(); dmCtx.arc(x, y, sz * 2, 0, Math.PI * 2); dmCtx.fillStyle = g2; dmCtx.fill();
+
+        dmCtx.beginPath(); dmCtx.arc(x, y, Math.max(sz * 0.58, 0.5), 0, Math.PI * 2);
+        dmCtx.fillStyle = `rgba(248,253,255,${b})`; dmCtx.fill();
+      }
+
+      function dmFrame() {
+        dmCtx.fillStyle = "rgba(0,0,0,0.5)";
+        dmCtx.fillRect(0, 0, dmW, dmH);
+
+        dmYAngle += dmY_SPIN;
+        for (const o of dmOrbs) o.theta += dmTRAVEL;
+
+        const projected = dmOrbs
+          .map((o) => {
+            const { x3, y3, z3 } = dmGet3D(o.theta);
+            const proj = dmProject(x3, y3, z3);
+            const fade = dmGapFade(o.theta);
+            return { o, proj, z3, fade };
+          })
+          .sort((a, b) => a.z3 - b.z3);
+
+        for (const { o, proj, z3, fade } of projected) {
+          if (fade < 0.02) { o.trail = []; continue; }
+
+          const depth = (z3 + dmRING_R) / (dmRING_R * 2);
+          o.trail.push({ x: proj.x, y: proj.y, depth, scale: proj.scale, fade });
+          if (o.trail.length > dmTRAIL_LEN) o.trail.shift();
+
+          const len = o.trail.length;
+          for (let j = 1; j < len; j++) {
+            const frac = j / len;
+            const f2 = frac * frac;
+            const prev = o.trail[j - 1], curr = o.trail[j];
+            const a = f2 * 0.42 * (0.18 + curr.depth * 0.82) * curr.fade;
+            const lw = f2 * o.size * curr.scale * 0.88;
+            if (a < 0.01) continue;
+            dmCtx.beginPath();
+            dmCtx.moveTo(prev.x, prev.y);
+            dmCtx.lineTo(curr.x, curr.y);
+            dmCtx.strokeStyle = `rgba(55,148,255,${a})`;
+            dmCtx.lineWidth = Math.max(lw, 0.3);
+            dmCtx.lineCap = "round";
+            dmCtx.stroke();
+          }
+
+          const pulse = 0.82 + 0.18 * Math.sin(dmT * 1.9 + o.pulseP);
+          dmDrawOrb(proj.x, proj.y, o.size, o.bright * pulse * fade, proj.scale, z3);
+        }
+
+        dmT += 0.016;
+        requestAnimationFrame(dmFrame);
+      }
+
+      dmCtx.fillStyle = "#000";
+      dmCtx.fillRect(0, 0, dmW, dmH);
+      dmFrame();
+    </script>
+
+    <script>
+      (function () {
+        var body = document.body;
+        var reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var fadeOutMs = reduced ? 0 : 1250;
+
+        function markReady() {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { body.classList.add("is-page-ready"); });
+          });
+        }
+
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", markReady);
+        else markReady();
+
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            body.classList.remove("is-page-leaving");
+            body.classList.add("is-page-ready");
+          }
+        });
+
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest("a");
+          if (!a) return;
+          var tgt = (a.getAttribute("target") || "_self").trim().toLowerCase();
+          if (tgt === "_blank" || tgt === "_top") return;
+          if (a.download) return;
+          var raw = a.getAttribute("href");
+          if (raw == null || raw === "") return;
+          if (/^\s*javascript:/i.test(raw)) return;
+          if (/^\s*mailto:/i.test(raw) || /^\s*tel:/i.test(raw)) return;
+
+          var url;
+          try { url = new URL(a.href, window.location.href); } catch (_) { return; }
+
+          var sameDocument = url.origin === location.origin && url.pathname === location.pathname && url.search === location.search;
+          if (sameDocument) return;
+
+          e.preventDefault();
+          var dest = a.href;
+          body.classList.remove("is-page-ready");
+          body.classList.add("is-page-leaving");
+
+          function go() { window.location.href = dest; }
+          if (reduced) { go(); return; }
+
+          var finished = false;
+          function finish() { if (finished) return; finished = true; go(); }
+
+          body.addEventListener("transitionend", function onEnd(ev) {
+            if (ev.target !== body || ev.propertyName !== "opacity") return;
+            finish();
+          }, { once: true });
+
+          window.setTimeout(finish, fadeOutMs + 200);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Me — Abrham Moges</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --about-gradient: linear-gradient(to right, #d1d1d1, #4a4a4a);
+        --page-fade-ms: 1400;
+        --page-fade-out-ms: 1250;
+        --about-blur: 0.55px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: var(--about-gradient);
+        background-color: #8a8a8a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 4vw, 2rem);
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
+        filter: blur(var(--about-blur));
+      }
+
+      body.is-page-ready {
+        opacity: 1;
+      }
+
+      body.is-page-leaving {
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-out-ms) * 1ms) ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body {
+          transition-duration: 0.01ms;
+          filter: none;
+        }
+
+        body.is-page-leaving {
+          transition-duration: 0.01ms;
+        }
+      }
+
+      .about-cluster {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        width: 100%;
+        max-width: min(98vw, 1680px);
+        transform: translateX(calc(-1 * clamp(1.75rem, 4.5vw, 4rem)));
+        isolation: isolate;
+      }
+
+      .about-head-wrap {
+        flex: 0 0 auto;
+        position: relative;
+        z-index: 2;
+        filter: drop-shadow(0 18px 26px rgba(0, 0, 0, 0.28));
+        margin-left: calc(-1 * clamp(6.5rem, 24vw, 17rem));
+        pointer-events: auto;
+      }
+
+      model-viewer.about-head {
+        display: block;
+        height: min(52vmin, 460px);
+        width: min(34vmin, 300px);
+        min-height: 200px;
+        min-width: 140px;
+        background-color: transparent;
+        --poster-color: transparent;
+      }
+
+      .about-title {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: min(98vw, min(1400px, 98vmin));
+      }
+
+      .about-title img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+
+      .about-corner-title {
+        position: fixed;
+        top: clamp(1.5rem, 4.2vh, 2.8rem);
+        right: clamp(0.9rem, 2.4vw, 1.8rem);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1;
+        color: #c8ca47;
+        z-index: 5;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      .about-corner-back {
+        position: fixed;
+        top: clamp(1.5rem, 4.2vh, 2.8rem);
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1;
+        color: #f5f5f5;
+        z-index: 5;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+        text-decoration: none;
+      }
+
+      .about-corner-back:hover {
+        opacity: 0.9;
+      }
+
+      .about-corner-back:focus-visible {
+        outline: 1px solid #fff;
+        outline-offset: 4px;
+      }
+
+      .about-bio {
+        margin: clamp(-10rem, -23vh, -6.25rem) 0 0;
+        width: min(90vw, 980px);
+        text-align: center;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.45;
+        color: #fff;
+        z-index: 3;
+      }
+
+      .about-footer {
+        position: fixed;
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        bottom: clamp(0.65rem, 2.2vh, 1.35rem);
+        margin: 0;
+        width: auto;
+        text-align: left;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.2;
+        color: rgba(255, 255, 255, 0.9);
+        z-index: 4;
+      }
+
+      @media (max-width: 800px) {
+        .about-cluster {
+          flex-direction: row;
+          align-items: center;
+          gap: 0;
+          transform: translateX(calc(-1 * clamp(0.75rem, 2.5vw, 2rem)));
+        }
+
+        .about-head-wrap {
+          margin-top: 0;
+          margin-left: calc(-1 * clamp(3.75rem, 12vw, 8.5rem));
+        }
+
+        model-viewer.about-head {
+          height: min(34vmin, 260px);
+          width: min(26vmin, 180px);
+        }
+
+        .about-title {
+          max-width: min(82vw, 620px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="about-corner-back" href="../home/">Back</a>
+    <p class="about-corner-title">About Me</p>
+
+    <main class="about-cluster" role="main">
+      <div class="about-title">
+        <img
+          src="../Portfolio By Abrham Moges white.PNG"
+          alt="Portfolio by Abrham Moges"
+          width="800"
+          height="400"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <div class="about-head-wrap">
+        <model-viewer
+          class="about-head"
+          src="../head.glb"
+          alt="3D portrait"
+          camera-controls
+          touch-action="pan-y"
+          interaction-prompt="none"
+          shadow-intensity="0.75"
+          exposure="1.08"
+          auto-rotate
+          auto-rotate-delay="400"
+          rotation-per-second="48"
+        ></model-viewer>
+      </div>
+    </main>
+
+    <p class="about-bio">
+      I'm a creative technologist with a Bachelor of Arts in Information Technology,
+      blending design and development to build engaging digital experiences. My skill
+      set spans across Adobe Creative Cloud, where I create polished visual assets and
+      user-focused designs, as well as Blender and 3D design, where I bring concepts
+      to life through motion, depth, and immersive visuals. Alongside my design
+      background, I have experience in front-end development, allowing me to translate
+      ideas into responsive, functional interfaces that not only look good but perform
+      seamlessly. I approach every project with a balance of creativity and technical
+      precision, aiming to deliver work that is both visually compelling and
+      user-centered.
+    </p>
+
+    <footer class="about-footer">© Abrham Moges</footer>
+
+    <script>
+      (function () {
+        var body = document.body;
+        var reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var fadeOutMs = reduced ? 0 : 1250;
+
+        function markReady() {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.classList.add("is-page-ready");
+            });
+          });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", markReady);
+        } else {
+          markReady();
+        }
+
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            body.classList.remove("is-page-leaving");
+            body.classList.add("is-page-ready");
+          }
+        });
+
+        var mv = document.querySelector("model-viewer.about-head");
+        if (mv && reduced) {
+          mv.removeAttribute("auto-rotate");
+        }
+
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest("a");
+          if (!a) return;
+          var tgt = (a.getAttribute("target") || "_self").trim().toLowerCase();
+          if (tgt === "_blank" || tgt === "_top") return;
+          if (a.download) return;
+          var raw = a.getAttribute("href");
+          if (raw == null || raw === "") return;
+          if (/^\s*javascript:/i.test(raw)) return;
+          if (/^\s*mailto:/i.test(raw) || /^\s*tel:/i.test(raw)) return;
+
+          var url;
+          try {
+            url = new URL(a.href, window.location.href);
+          } catch (_) {
+            return;
+          }
+
+          var sameDocument =
+            url.origin === location.origin &&
+            url.pathname === location.pathname &&
+            url.search === location.search;
+          if (sameDocument) return;
+
+          e.preventDefault();
+          var dest = a.href;
+          body.classList.remove("is-page-ready");
+          body.classList.add("is-page-leaving");
+
+          function go() {
+            window.location.href = dest;
+          }
+
+          if (reduced) {
+            go();
+            return;
+          }
+
+          var finished = false;
+          function finish() {
+            if (finished) return;
+            finished = true;
+            go();
+          }
+
+          body.addEventListener(
+            "transitionend",
+            function onEnd(ev) {
+              if (ev.target !== body || ev.propertyName !== "opacity") return;
+              finish();
+            },
+            { once: true }
+          );
+          window.setTimeout(finish, fadeOutMs + 200);
+        });
+      })();
+    </script>
+  </body>
+</html>

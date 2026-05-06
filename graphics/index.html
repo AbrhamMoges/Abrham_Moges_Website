@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graphics — Abrham Moges</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --graphics-gradient: linear-gradient(to right, #d1d1d1, #4a4a4a);
+        --page-fade-ms: 1400;
+        --page-fade-out-ms: 1250;
+        --graphics-blur: 0.55px;
+      }
+
+      * { box-sizing: border-box; }
+      html { height: 100%; }
+
+      body {
+        margin: 0;
+        min-height: 100%;
+        min-height: 100dvh;
+        background: var(--graphics-gradient);
+        background-color: #8a8a8a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 4vw, 2rem);
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
+        filter: blur(var(--graphics-blur));
+      }
+
+      body.is-page-ready { opacity: 1; }
+
+      body.is-page-leaving {
+        opacity: 0;
+        transition: opacity calc(var(--page-fade-out-ms) * 1ms) ease-in;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body {
+          transition-duration: 0.01ms;
+          filter: none;
+        }
+        body.is-page-leaving { transition-duration: 0.01ms; }
+      }
+
+      .graphics-corner-title,
+      .graphics-corner-back {
+        position: fixed;
+        top: clamp(1.5rem, 4.2vh, 2.8rem);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1;
+        z-index: 5;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      .graphics-corner-title {
+        right: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #c8ca47;
+      }
+
+      .graphics-corner-back {
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #f5f5f5;
+        text-decoration: none;
+      }
+      .graphics-corner-back:hover { opacity: 0.9; }
+      .graphics-corner-back:focus-visible {
+        outline: 1px solid #fff;
+        outline-offset: 4px;
+      }
+
+      .graphics-footer {
+        position: fixed;
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        bottom: clamp(0.65rem, 2.2vh, 1.35rem);
+        margin: 0;
+        width: auto;
+        text-align: left;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.2;
+        color: rgba(255, 255, 255, 0.9);
+        z-index: 4;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="graphics-corner-back" href="../home/">Back</a>
+    <p class="graphics-corner-title">Graphics</p>
+    <footer class="graphics-footer">© Abrham Moges</footer>
+    <script>
+      (function () {
+        var body = document.body;
+        var reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var fadeOutMs = reduced ? 0 : 1250;
+
+        function markReady() {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.classList.add("is-page-ready");
+            });
+          });
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", markReady);
+        } else {
+          markReady();
+        }
+
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            body.classList.remove("is-page-leaving");
+            body.classList.add("is-page-ready");
+          }
+        });
+
+        document.addEventListener("click", function (e) {
+          var a = e.target.closest("a");
+          if (!a) return;
+          var tgt = (a.getAttribute("target") || "_self").trim().toLowerCase();
+          if (tgt === "_blank" || tgt === "_top") return;
+          if (a.download) return;
+          var raw = a.getAttribute("href");
+          if (raw == null || raw === "") return;
+          if (/^\s*javascript:/i.test(raw)) return;
+          if (/^\s*mailto:/i.test(raw) || /^\s*tel:/i.test(raw)) return;
+
+          var url;
+          try {
+            url = new URL(a.href, window.location.href);
+          } catch (_) {
+            return;
+          }
+
+          var sameDocument =
+            url.origin === location.origin &&
+            url.pathname === location.pathname &&
+            url.search === location.search;
+          if (sameDocument) return;
+
+          e.preventDefault();
+          var dest = a.href;
+          body.classList.remove("is-page-ready");
+          body.classList.add("is-page-leaving");
+
+          function go() {
+            window.location.href = dest;
+          }
+
+          if (reduced) {
+            go();
+            return;
+          }
+
+          var finished = false;
+          function finish() {
+            if (finished) return;
+            finished = true;
+            go();
+          }
+
+          body.addEventListener(
+            "transitionend",
+            function onEnd(ev) {
+              if (ev.target !== body || ev.propertyName !== "opacity") return;
+              finish();
+            },
+            { once: true }
+          );
+          window.setTimeout(finish, fadeOutMs + 200);
+        });
+      })();
+    </script>
+  </body>
+</html>
