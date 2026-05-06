@@ -51,7 +51,9 @@
         justify-content: center;
         align-items: center;
         align-content: center;
-        gap: clamp(0rem, 0.35vw, 0.35rem);
+        /* Cluster centered on page: particles (left of cluster) · nav/links (right) */
+        column-gap: 0;
+        row-gap: clamp(0.75rem, 2.5vh, 1.5rem);
         padding: clamp(1rem, 4vw, 2rem);
         min-height: 0;
         width: 100%;
@@ -62,39 +64,22 @@
         flex: 0 0 auto;
         z-index: 0;
         pointer-events: none;
-        transform: translateX(clamp(1.35rem, 2.75vw, 3.35rem));
       }
 
       .dual-motion-ring canvas {
         display: block;
         border-radius: 8px;
         background: #000;
-        width: min(680px, calc(100vw - 120px));
+        width: min(640px, calc(100vw - 280px));
         height: auto;
-      }
-
-      .home-tommy-cube {
-        flex: 0 0 auto;
-        z-index: 0;
-        align-self: center;
-        width: min(260px, min(52vmin, calc(100vw - 140px)));
-        height: min(260px, min(52vmin, calc(100vw - 140px)));
-      }
-
-      .home-tommy-cube iframe {
-        display: block;
-        width: 100%;
-        height: 100%;
-        border: none;
-        outline: none;
-        background: transparent;
-        border-radius: 8px;
       }
 
       .gallery-wrap {
         flex: 0 0 auto;
         width: fit-content;
-        max-width: 100%;
+        max-width: min(42vw, 20rem);
+        /* Slide nav toward particles without moving the particle column */
+        transform: translateX(clamp(-12rem, -38vw, -5.5rem));
       }
 
       .gallery {
@@ -102,7 +87,7 @@
         z-index: 0;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         width: fit-content;
         max-width: 100%;
@@ -116,13 +101,13 @@
         gap: 1.45em;
         list-style: none;
         filter: blur(var(--nav-blur));
-        transform: translateX(calc(-1 * clamp(5.15rem, 20vw, 14rem)));
+        transform: none;
       }
 
       .gallery a {
         color: inherit;
         text-decoration: none;
-        text-align: center;
+        text-align: left;
         white-space: nowrap;
       }
 
@@ -135,8 +120,29 @@
       .gallery:has(a:focus-visible) { filter: none; }
 
       @media (max-width: 780px) {
+        .hero-rail {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          column-gap: 0;
+        }
+
+        .dual-motion-ring canvas {
+          width: min(100%, min(560px, calc(100vw - 48px)));
+        }
+
+        .gallery-wrap {
+          max-width: 100%;
+          width: 100%;
+          transform: none;
+        }
+
         .gallery {
-          transform: translateX(calc(-1 * clamp(1.15rem, 8vw, 3.35rem)));
+          align-items: center;
+        }
+
+        .gallery a {
+          text-align: center;
         }
       }
     </style>
@@ -145,15 +151,6 @@
     <div class="hero-rail">
       <div class="dual-motion-ring" aria-hidden="true">
         <canvas id="dualMotionRingCanvas" width="680" height="480"></canvas>
-      </div>
-      <div class="home-tommy-cube">
-        <iframe
-          title="Tommy Richman Coyotye cube"
-          src="../tommy-richman-coyotye-cube_rect.html"
-          width="260"
-          height="260"
-          loading="eager"
-        ></iframe>
       </div>
       <main class="gallery-wrap" role="main">
         <nav class="gallery" aria-label="Primary">
