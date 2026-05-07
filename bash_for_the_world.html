@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bash for the World — glyph 3D</title>
+    <style>
+      html {
+        background: transparent;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        height: 100%;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      #wrap {
+        width: 100%;
+        height: 100%;
+        max-width: min(380px, 62vmin);
+        max-height: min(380px, 62vmin);
+        aspect-ratio: 1 / 1;
+        box-sizing: border-box;
+      }
+      #c {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #bash-missing {
+        display: none;
+        padding: 0.75rem 1rem;
+        margin: 0 auto;
+        max-width: 18rem;
+        font: 14px/1.35 system-ui, sans-serif;
+        color: rgba(255, 255, 255, 0.92);
+        text-align: center;
+        background: rgba(0, 0, 0, 0.55);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      #bash-missing.is-visible {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap"><canvas id="c"></canvas></div>
+    <p id="bash-missing" role="status">
+      Missing <strong>bash-for-the-world.png</strong> — place it next to this HTML file.
+    </p>
+
+    <script src="lib/three.r128.min.js"></script>
+    <script>
+      (function () {
+        const wrap = document.getElementById("wrap");
+        const canvas = document.getElementById("c");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
+        camera.position.set(0, 0, 5);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const viewScale = 0.935;
+        let boxW = 4;
+        let boxH = 4;
+        const depth = 0.22;
+
+        const reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const HOVER_PERIOD_S = 3.45;
+        const yLo = -0.062;
+        const yHi = 0.095;
+        const yMid = (yLo + yHi) / 2;
+        const yAmp = (yHi - yLo) / 2;
+        const yawBase = 0.1;
+        const yawSwing = 0.052;
+        let t0 = performance.now();
+
+        function fitCamera(rw, rh) {
+          camera.aspect = rw / rh;
+          const imgAspect = boxW / boxH;
+          const viewAspect = rw / rh;
+          const vFov = (camera.fov * Math.PI) / 180;
+          const margin = 0.98;
+          let dist;
+          if (viewAspect >= imgAspect) {
+            dist = boxH / 2 / Math.tan(vFov / 2) / margin;
+          } else {
+            const hFov = 2 * Math.atan(Math.tan(vFov / 2) * viewAspect);
+            dist = boxW / 2 / Math.tan(hFov / 2) / margin;
+          }
+          camera.position.z = dist / viewScale;
+          camera.position.x = 0;
+          camera.position.y = 0;
+          camera.lookAt(0, 0, 0);
+          camera.updateProjectionMatrix();
+        }
+
+        function makeCoverShader(texture) {
+          return new THREE.ShaderMaterial({
+            uniforms: { map: { value: texture } },
+            vertexShader: `
+              varying vec2 vUv;
+              void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+              }
+            `,
+            fragmentShader: `
+              precision highp float;
+              uniform sampler2D map;
+              varying vec2 vUv;
+              void main() {
+                vec4 c = texture2D(map, vUv);
+                float mx = max(c.r, max(c.g, c.b));
+                float lum = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
+                float sig = max(mx, lum);
+                float a = smoothstep(0.012, 0.065, sig) * c.a;
+                if (a < 0.004) discard;
+                gl_FragColor = vec4(c.rgb, a);
+              }
+            `,
+            transparent: true,
+            side: THREE.FrontSide,
+            depthWrite: false,
+          });
+        }
+
+        const loader = new THREE.TextureLoader();
+        loader.load(
+          "bash-for-the-world.png",
+          function (texture) {
+            texture.encoding = THREE.sRGBEncoding;
+            texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+
+            const iw = texture.image.width;
+            const ih = texture.image.height;
+            const a = iw / ih;
+
+            const longSide = 5.35;
+            if (a >= 1) {
+              boxW = longSide;
+              boxH = longSide / a;
+            } else {
+              boxH = longSide;
+              boxW = longSide * a;
+            }
+
+            const frontMat = makeCoverShader(texture);
+            /* Tan / ochre edges to echo the glyph */
+            const sideColor = new THREE.MeshBasicMaterial({ color: 0x7d5a38 });
+            const rimTop = new THREE.MeshBasicMaterial({ color: 0xa67c4e });
+            const rimBot = new THREE.MeshBasicMaterial({ color: 0x593d24 });
+            const backMat = new THREE.MeshBasicMaterial({ color: 0x0f0e0d });
+
+            const geo = new THREE.BoxGeometry(boxW, boxH, depth);
+            const mats = [
+              sideColor,
+              sideColor,
+              rimTop,
+              rimBot,
+              frontMat,
+              backMat,
+            ];
+
+            const mesh = new THREE.Mesh(geo, mats);
+            group.add(mesh);
+
+            fitCamera(wrap.clientWidth, wrap.clientHeight);
+          },
+          undefined,
+          function () {
+            const el = document.getElementById("bash-missing");
+            if (el) el.classList.add("is-visible");
+          }
+        );
+
+        function resize() {
+          const rw = Math.max(1, wrap.clientWidth);
+          const rh = Math.max(1, wrap.clientHeight);
+          renderer.setSize(rw, rh, false);
+          if (group.children.length) fitCamera(rw, rh);
+          else {
+            camera.aspect = rw / rh;
+            camera.updateProjectionMatrix();
+          }
+        }
+
+        function animate() {
+          requestAnimationFrame(animate);
+          if (!reduced) {
+            const elapsed = (performance.now() - t0) / 1000;
+            const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
+            group.position.y = yMid + yAmp * Math.cos(phase);
+            group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.58);
+          } else {
+            group.position.y = 0;
+            group.rotation.y = yawBase;
+          }
+          renderer.render(scene, camera);
+        }
+
+        if (typeof ResizeObserver !== "undefined") {
+          new ResizeObserver(resize).observe(wrap);
+        } else {
+          window.addEventListener("resize", resize);
+        }
+        resize();
+        animate();
+      })();
+    </script>
+  </body>
+</html>
