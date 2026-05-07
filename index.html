@@ -98,9 +98,10 @@
   </head>
   <body>
     <main class="splash">
+      <!-- Autoplay: muted + playsinline (no loop — we navigate to home when the clip ends). -->
       <video
         id="splash-video"
-        poster="./ps2-startup-poster.jpg"
+        poster="/ps2-startup-poster.jpg"
         preload="auto"
         autoplay
         muted
@@ -108,7 +109,7 @@
         disablePictureInPicture
         aria-label="Intro video. Skips to home when finished, or click while playing to skip."
       >
-        <source src="./ps2-startup-splash.mp4" type="video/mp4" />
+        <source src="/ps2-startup-splash.mp4" type="video/mp4" />
       </video>
     </main>
     <div id="splash-error" role="alert"></div>
