@@ -282,6 +282,36 @@
         cursor: pointer;
       }
 
+      .ps2-nav {
+        position: absolute;
+        bottom: clamp(3rem, 8vh, 6rem);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1.6rem;
+        z-index: 9999;
+      }
+
+      .ps2-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 22px;
+        font-weight: normal;
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
       .tr-popup-overlay {
         position: fixed;
         inset: 0;
@@ -304,8 +334,8 @@
       }
 
       .tr-popup-box {
-        width: min(520px, 68vmin);
-        height: min(520px, 68vmin);
+        width: min(680px, 80vmin);
+        height: min(680px, 80vmin);
         transform: scale(0);
         transform-origin: left center;
         transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1);
@@ -324,9 +354,79 @@
         pointer-events: auto;
       }
 
+      .tr-popup-text-block {
+        position: absolute;
+        top: 10%;
+        left: 45%;
+        width: clamp(280px, 38vw, 520px);
+        max-height: 70vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+      }
+
+      .tr-popup-overlay.is-open .tr-popup-text-block {
+        opacity: 1;
+      }
+
+      .tr-popup-title {
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 35px;
+        font-weight: normal;
+        color: #c8ca47;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+        line-height: 1.3;
+      }
+
+      .tr-popup-subtitle {
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      .tr-popup-desc {
+        margin: 1.4rem 0 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 20px;
+        line-height: 1.6;
+        text-align: center;
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .tr-popup-overlay { transition: none; }
         .tr-popup-box { transition: none; }
+        .tr-popup-title { transition: none; }
       }
     </style>
   </head>
@@ -415,6 +515,10 @@
     <footer class="commissions-footer">© Abrham Moges</footer>
 
     <div class="tr-popup-overlay" id="tr-popup-overlay" aria-hidden="true">
+      <div class="tr-popup-text-block">
+        <p class="tr-popup-title">Coyote Experimental Event Design<br><span class="tr-popup-subtitle">For Tommy Richman</span><br><span class="tr-popup-subtitle">09/30/2024</span></p>
+        <p class="tr-popup-desc">As an experiential designer at a Agency, I had the opportunity to contribute to the Tommy Richman Coyote album release party — an immersive event experience brought to life through intentional design and spatial storytelling. I was responsible for developing detailed 3D models using SketchUp, translating creative concepts into visual blueprints that guided the overall production and layout of the event. This project challenged me to think beyond traditional design boundaries, merging artistic vision with technical precision to help craft an unforgettable environment for the audience.</p>
+      </div>
       <div class="tr-popup-box" id="tr-popup-box">
         <iframe
           id="tr-popup-iframe"
@@ -422,6 +526,35 @@
           src=""
           loading="lazy"
         ></iframe>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="xbg" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="obg" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Next
+        </div>
       </div>
     </div>
     <script>
@@ -584,7 +717,7 @@
         var firstTile = document.querySelector(".commissions-cube-row > .commissions-tile:first-child");
         var overlay = document.getElementById("tr-popup-overlay");
         var iframe = document.getElementById("tr-popup-iframe");
-        var iframeSrc = "../tommy-richman-coyotye-cube_rect.html";
+        var iframeSrc = "../tommy-richman-coyotye-cube_rect.html?popup=1";
 
         if (!firstTile || !overlay || !iframe) return;
 
@@ -604,8 +737,11 @@
         firstTile.addEventListener("click", openPopup);
 
         overlay.addEventListener("click", function (e) {
-          if (!e.target.closest("#tr-popup-box")) closePopup();
+          if (!e.target.closest("#tr-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
         });
+
+        var backBtn = document.getElementById("ps2-back-btn");
+        if (backBtn) backBtn.addEventListener("click", closePopup);
 
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape") closePopup();
