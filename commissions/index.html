@@ -37,6 +37,7 @@
 
       html {
         height: 100%;
+        overflow: hidden;
       }
 
       body {
@@ -49,6 +50,7 @@
         opacity: 1;
         transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
         position: relative;
+        overflow: hidden;
       }
 
       /* Whole-viewport: slight Gaussian + faint cool cast above page content */
@@ -275,6 +277,57 @@
         color: rgba(255, 255, 255, 0.9);
         z-index: 4;
       }
+
+      .commissions-cube-row > .commissions-tile:first-child {
+        cursor: pointer;
+      }
+
+      .tr-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: clamp(4rem, 12vw, 10rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .tr-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .tr-popup-box {
+        width: min(520px, 68vmin);
+        height: min(520px, 68vmin);
+        transform: scale(0);
+        transform-origin: left center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1);
+        will-change: transform;
+      }
+
+      .tr-popup-overlay.is-open .tr-popup-box {
+        transform: scale(1);
+      }
+
+      .tr-popup-box iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: auto;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .tr-popup-overlay { transition: none; }
+        .tr-popup-box { transition: none; }
+      }
     </style>
   </head>
   <body class="is-page-ready">
@@ -360,6 +413,17 @@
     </main>
 
     <footer class="commissions-footer">© Abrham Moges</footer>
+
+    <div class="tr-popup-overlay" id="tr-popup-overlay" aria-hidden="true">
+      <div class="tr-popup-box" id="tr-popup-box">
+        <iframe
+          id="tr-popup-iframe"
+          title="Tommy Richman Coyotye cube — expanded"
+          src=""
+          loading="lazy"
+        ></iframe>
+      </div>
+    </div>
     <script>
       (function () {
         var body = document.body;
@@ -514,6 +578,38 @@
             setupTileHover
           );
         }
+      })();
+
+      (function () {
+        var firstTile = document.querySelector(".commissions-cube-row > .commissions-tile:first-child");
+        var overlay = document.getElementById("tr-popup-overlay");
+        var iframe = document.getElementById("tr-popup-iframe");
+        var iframeSrc = "../tommy-richman-coyotye-cube_rect.html";
+
+        if (!firstTile || !overlay || !iframe) return;
+
+        function openPopup() {
+          if (!iframe.src || iframe.src === window.location.href) {
+            iframe.src = iframeSrc;
+          }
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+        }
+
+        firstTile.addEventListener("click", openPopup);
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest("#tr-popup-box")) closePopup();
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
+        });
       })();
     </script>
   </body>
