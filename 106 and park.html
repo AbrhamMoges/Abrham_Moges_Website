@@ -180,12 +180,14 @@
         camera.updateProjectionMatrix();
       }
 
+      const isPopup = new URLSearchParams(window.location.search).get('popup') === '1';
       function animate() {
         requestAnimationFrame(animate);
         if (!reduced) {
           const elapsed = (performance.now() - t0) / 1000;
           const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
           group.position.y = yMid + yAmp * Math.cos(phase);
+          if (isPopup) group.rotation.y += 0.012;
         } else {
           group.position.y = 0;
         }

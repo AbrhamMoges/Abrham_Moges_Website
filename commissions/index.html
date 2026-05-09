@@ -278,7 +278,8 @@
         z-index: 4;
       }
 
-      .commissions-cube-row > .commissions-tile:first-child {
+      .commissions-cube-row > .commissions-tile:first-child,
+      .commissions-cube-row > .commissions-tile:nth-child(2) {
         cursor: pointer;
       }
 
@@ -428,6 +429,239 @@
         .tr-popup-box { transition: none; }
         .tr-popup-title { transition: none; }
       }
+
+      .park-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: clamp(0.5rem, 2vw, 1.5rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .park-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .park-popup-box {
+        width: min(680px, 80vmin);
+        height: min(680px, 80vmin);
+        transform: scale(0);
+        transform-origin: left center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1);
+        will-change: transform;
+      }
+
+      .park-popup-overlay.is-open .park-popup-box {
+        transform: scale(1);
+      }
+
+      .park-popup-box iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: auto;
+      }
+
+      .park-popup-text-block {
+        position: absolute;
+        top: 10%;
+        left: 45%;
+        width: clamp(280px, 38vw, 520px);
+        max-height: 62vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+        padding-right: 6px;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.4) transparent;
+      }
+
+      .park-popup-text-block::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .park-popup-text-block::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .park-popup-text-block::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.4);
+        border-radius: 2px;
+      }
+
+      .park-popup-images {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        margin-top: 1.6rem;
+        width: 100%;
+      }
+
+      .park-popup-images img {
+        width: 100%;
+        border-radius: 4px;
+        display: block;
+      }
+
+      .park-popup-overlay.is-open .park-popup-text-block {
+        opacity: 1;
+      }
+
+      .park-popup-title {
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 35px;
+        font-weight: normal;
+        text-align: center;
+        color: #c8ca47;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+        line-height: 1.3;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .park-popup-overlay { transition: none; }
+        .park-popup-box { transition: none; }
+        .park-popup-text-block { transition: none; }
+      }
+
+      /* ── Mobile: iPhone 13 Pro / Pro Max (390–428 px) ── */
+      @media (max-width: 480px) {
+
+        /* Smaller corner labels */
+        .commissions-corner-title,
+        .commissions-corner-back {
+          font-size: clamp(14px, 4.5vw, 20px);
+        }
+
+        /* Keep position:fixed on main — just reflow tiles into 2 columns.
+           All 6 tiles (~182px each) fit within iPhone viewport height. */
+        .commissions-main {
+          left: 0.5rem;
+          right: 0.5rem;
+          overflow: visible;
+        }
+
+        /* 2-column tile grid */
+        .commissions-cube-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.6rem;
+          width: calc(100vw - 1rem);
+          flex-flow: unset;
+        }
+
+        /* Reset tiles to fill grid cells */
+        .commissions-tile,
+        .commissions-cube-row > .commissions-tile:nth-child(n) {
+          width: 100% !important;
+          height: auto !important;
+          aspect-ratio: 1 / 1;
+          margin-inline-start: 0 !important;
+          z-index: 1 !important;
+          overflow: hidden;
+          touch-action: manipulation;
+          cursor: pointer;
+        }
+
+        .commissions-tile-pop {
+          width: 100%;
+          height: 100%;
+        }
+
+        .commissions-tile iframe {
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+
+        /* ── Popups: stack vertically ── */
+        .tr-popup-overlay,
+        .park-popup-overlay {
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          padding: 4rem 1rem 6rem;
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .tr-popup-box,
+        .park-popup-box {
+          width: min(78vw, 300px);
+          height: min(78vw, 300px);
+          transform-origin: center top;
+          flex-shrink: 0;
+        }
+
+        .tr-popup-text-block,
+        .park-popup-text-block {
+          position: relative;
+          top: auto;
+          left: auto;
+          width: 92vw;
+          max-height: none;
+          margin-top: 1.2rem;
+          overflow-y: visible;
+          padding-right: 0;
+        }
+
+        .tr-popup-title,
+        .park-popup-title {
+          font-size: clamp(15px, 4.2vw, 20px);
+        }
+
+        .tr-popup-desc {
+          font-size: 13px;
+        }
+
+        .park-popup-images img {
+          border-radius: 3px;
+        }
+
+        .ps2-nav {
+          position: sticky;
+          bottom: 0.8rem;
+          left: auto;
+          transform: none;
+          align-self: center;
+          margin-top: 1rem;
+        }
+
+        .ps2-btn {
+          font-size: 15px;
+        }
+
+        .ps2-btn svg {
+          width: 36px;
+          height: 36px;
+        }
+      }
     </style>
   </head>
   <body class="is-page-ready">
@@ -551,6 +785,64 @@
               </radialGradient>
             </defs>
             <circle cx="16" cy="16" r="15" fill="url(#obg)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="park-popup-overlay" id="park-popup-overlay" aria-hidden="true">
+      <div class="park-popup-text-block">
+        <p class="park-popup-title">106 and Park<br>Homecoming Atlanta<br><span class="tr-popup-subtitle">Visual Stage Design</span></p>
+        <p class="tr-popup-desc">Designed and developed the creative stage visuals and spatial experience for BET's 106 & Park Live @ NSU Homecoming production, blending nostalgic 106 & Park branding with modern concert-style visual direction. Created 3D stage renders, LED wall concepts, branded scenic elements, and immersive visual layouts for a large-scale live event featuring talent including Bow Wow, Anycia, Cash Cobain, and DJ Juss. Collaborated on stage graphics, motion concepts, audience engagement visuals, and production-ready design assets to support live performances, filming, and broadcast content.</p>
+        <div class="park-popup-images">
+          <img src="../BET_stage_visual_portfolio_assets/10_stage_blueprint.png" alt="Stage blueprint"/>
+          <img src="../BET_stage_visual_portfolio_assets/11_stage_render_wide.png" alt="Stage render wide"/>
+          <img src="../BET_stage_visual_portfolio_assets/12_stage_render_closeup.png" alt="Stage render closeup"/>
+          <img src="../BET_stage_visual_portfolio_assets/13_stage_render_alt.png" alt="Stage render alt"/>
+          <img src="../BET_stage_visual_portfolio_assets/14_stage_render_left.png" alt="Stage render left"/>
+          <img src="../BET_stage_visual_portfolio_assets/15_stage_render_topdown.png" alt="Stage render top down"/>
+          <img src="../BET_stage_visual_portfolio_assets/16_stage_render_djbooth.png" alt="Stage render DJ booth"/>
+          <img src="../BET_stage_visual_portfolio_assets/55_final_render_wide.png" alt="Final render wide"/>
+          <img src="../BET_stage_visual_portfolio_assets/56_final_render_angle.png" alt="Final render angle"/>
+          <img src="../BET_stage_visual_portfolio_assets/57_final_render_dj.png" alt="Final render DJ"/>
+          <img src="../BET_stage_visual_portfolio_assets/58_final_render_side.png" alt="Final render side"/>
+          <img src="../BET_stage_visual_portfolio_assets/59_final_render_front.png" alt="Final render front"/>
+        </div>
+      </div>
+      <div class="park-popup-box" id="park-popup-box">
+        <iframe
+          id="park-popup-iframe"
+          title="106 and Park live 3D — expanded"
+          src=""
+          loading="lazy"
+        ></iframe>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="park-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="xbg2" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg2)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="obg2" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg2)" stroke="#555" stroke-width="1.2"/>
             <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
           </svg>
           Next
@@ -734,13 +1026,66 @@
           overlay.setAttribute("aria-hidden", "true");
         }
 
-        firstTile.addEventListener("click", openPopup);
+        var trTapped = false;
+        firstTile.addEventListener("touchend", function (e) {
+          trTapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { trTapped = false; }, 600);
+        });
+        firstTile.addEventListener("click", function () {
+          if (!trTapped) openPopup();
+        });
 
         overlay.addEventListener("click", function (e) {
           if (!e.target.closest("#tr-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
         });
 
         var backBtn = document.getElementById("ps2-back-btn");
+        if (backBtn) backBtn.addEventListener("click", closePopup);
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
+        });
+      })();
+
+      (function () {
+        var secondTile = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(2)");
+        var overlay = document.getElementById("park-popup-overlay");
+        var iframe = document.getElementById("park-popup-iframe");
+        var iframeSrc = "../106%20and%20park.html?popup=1";
+
+        if (!secondTile || !overlay || !iframe) return;
+
+        function openPopup() {
+          if (!iframe.src || iframe.src === window.location.href) {
+            iframe.src = iframeSrc;
+          }
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+        }
+
+        var parkTapped = false;
+        secondTile.addEventListener("touchend", function (e) {
+          parkTapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { parkTapped = false; }, 600);
+        });
+        secondTile.addEventListener("click", function () {
+          if (!parkTapped) openPopup();
+        });
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest("#park-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
+        });
+
+        var backBtn = document.getElementById("park-ps2-back-btn");
         if (backBtn) backBtn.addEventListener("click", closePopup);
 
         document.addEventListener("keydown", function (e) {

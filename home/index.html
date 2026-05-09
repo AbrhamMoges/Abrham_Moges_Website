@@ -145,6 +145,25 @@
           text-align: center;
         }
       }
+
+      @media (max-width: 480px) {
+        :root {
+          --nav-font-size: 13pt;
+        }
+
+        .hero-rail {
+          padding: clamp(0.75rem, 3vw, 1.25rem);
+          row-gap: 0.75rem;
+        }
+
+        .dual-motion-ring canvas {
+          width: min(100%, calc(100vw - 24px));
+        }
+
+        .gallery {
+          gap: 1.1em;
+        }
+      }
     </style>
   </head>
   <body>
