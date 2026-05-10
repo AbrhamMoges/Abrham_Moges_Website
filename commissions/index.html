@@ -599,23 +599,40 @@
           pointer-events: none;
         }
 
-        /* ── Popups: stack vertically ── */
+        /* ── Popups: stack vertically, overlay itself doesn't scroll ── */
         .tr-popup-overlay,
         .park-popup-overlay {
           flex-direction: column;
           align-items: center;
           justify-content: flex-start;
-          padding: 4rem 1rem 6rem;
-          overflow-y: auto;
-          overflow-x: hidden;
-          -webkit-overflow-scrolling: touch;
+          padding: 3rem 1rem 5.5rem;
+          overflow: hidden;
         }
 
-        .tr-popup-box,
+        .tr-popup-box {
+          width: 150px;
+          height: 150px;
+          overflow: hidden;
+          transform-origin: center center;
+          flex-shrink: 0;
+          margin-top: auto;
+          margin-bottom: auto;
+        }
+
+        /* Iframe renders at full 300px so the cube isn't clipped,
+           then scaled visually to 150px via CSS transform */
+        #tr-popup-iframe {
+          width: 300px !important;
+          height: 300px !important;
+          transform: scale(0.5);
+          transform-origin: top left;
+          pointer-events: none;
+        }
+
         .park-popup-box {
           width: min(78vw, 300px);
           height: min(78vw, 300px);
-          transform-origin: center top;
+          transform-origin: center center;
           flex-shrink: 0;
         }
 
@@ -625,10 +642,13 @@
           top: auto;
           left: auto;
           width: 92vw;
-          max-height: none;
-          margin-top: 1.2rem;
-          overflow-y: visible;
+          flex: 0 0 auto;
+          max-height: 45vh;
+          margin-top: 0;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
           padding-right: 0;
+          padding-bottom: 0;
         }
 
         .tr-popup-title,
@@ -644,13 +664,14 @@
           border-radius: 3px;
         }
 
+        /* PS2 nav pinned to bottom of the fixed overlay */
         .ps2-nav {
-          position: sticky;
-          bottom: 0.8rem;
-          left: auto;
-          transform: none;
-          align-self: center;
-          margin-top: 1rem;
+          position: absolute;
+          bottom: 1.8rem;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 0;
+          align-self: unset;
         }
 
         .ps2-btn {

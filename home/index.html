@@ -148,20 +148,40 @@
 
       @media (max-width: 480px) {
         :root {
-          --nav-font-size: 13pt;
+          --nav-font-size: 19pt;
         }
 
+        /* Canvas fills most of the screen; gallery floats on top-right */
         .hero-rail {
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
           padding: clamp(0.75rem, 3vw, 1.25rem);
-          row-gap: 0.75rem;
+          position: relative;
         }
 
         .dual-motion-ring canvas {
-          width: min(100%, calc(100vw - 24px));
+          width: 100vw;
+        }
+
+        .gallery-wrap {
+          position: absolute;
+          right: 18vw;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 2;
+          width: auto;
+          max-width: 55vw;
         }
 
         .gallery {
-          gap: 1.1em;
+          align-items: flex-start;
+          gap: 1.3em;
+        }
+
+        .gallery a {
+          text-align: left;
+          white-space: nowrap;
         }
       }
     </style>
