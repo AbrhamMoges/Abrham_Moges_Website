@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HXOUSE Labs World Tour — 3D</title>
+    <style>
+      html {
+        background: transparent;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        scrollbar-width: none;
+      }
+      html::-webkit-scrollbar { display: none; }
+      body {
+        margin: 0;
+        min-height: 100%;
+        height: 100%;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        scrollbar-width: none;
+      }
+      body::-webkit-scrollbar { display: none; }
+      #wrap {
+        width: 100%;
+        height: 100%;
+        max-width: min(380px, 62vmin);
+        max-height: min(380px, 62vmin);
+        aspect-ratio: 1 / 1;
+        box-sizing: border-box;
+      }
+      #c {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap"><canvas id="c"></canvas></div>
+
+    <script src="lib/three.r128.min.js"></script>
+    <script>
+      (function () {
+        const wrap = document.getElementById("wrap");
+        const canvas = document.getElementById("c");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
+        camera.position.set(0, 0, 5);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const viewScale = 1.0;
+        let boxW = 4;
+        let boxH = 4;
+        const depth = 0.22;
+
+        const reduced =
+          typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const HOVER_PERIOD_S = 3.45;
+        const yLo = -0.062;
+        const yHi = 0.095;
+        const yMid = (yLo + yHi) / 2;
+        const yAmp = (yHi - yLo) / 2;
+        const yawBase = 0.1;
+        const yawSwing = 0.052;
+        let t0 = performance.now();
+
+        function fitCamera(rw, rh) {
+          camera.aspect = rw / rh;
+          const imgAspect = boxW / boxH;
+          const viewAspect = rw / rh;
+          const vFov = (camera.fov * Math.PI) / 180;
+          const margin = 0.98;
+          let dist;
+          if (viewAspect >= imgAspect) {
+            dist = boxH / 2 / Math.tan(vFov / 2) / margin;
+          } else {
+            const hFov = 2 * Math.atan(Math.tan(vFov / 2) * viewAspect);
+            dist = boxW / 2 / Math.tan(hFov / 2) / margin;
+          }
+          camera.position.z = dist / viewScale;
+          camera.position.x = 0;
+          camera.position.y = 0;
+          camera.lookAt(0, 0, 0);
+          camera.updateProjectionMatrix();
+        }
+
+        const loader = new THREE.TextureLoader();
+        loader.load(
+          "hxouse-labs-tour.png",
+          function (texture) {
+            texture.encoding = THREE.sRGBEncoding;
+            texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+
+            const iw = texture.image.width;
+            const ih = texture.image.height;
+            const a = iw / ih;
+
+            const longSide = 5.35;
+            if (a >= 1) {
+              boxW = longSide;
+              boxH = longSide / a;
+            } else {
+              boxH = longSide;
+              boxW = longSide * a;
+            }
+
+            /* Full opaque material — keeps the black background */
+            const frontMat = new THREE.MeshBasicMaterial({ map: texture });
+            /* Gunmetal / silver edges to match the dark industrial look */
+            const sideColor = new THREE.MeshBasicMaterial({ color: 0x2e2e2e });
+            const rimTop   = new THREE.MeshBasicMaterial({ color: 0x484848 });
+            const rimBot   = new THREE.MeshBasicMaterial({ color: 0x1a1a1a });
+            const backMat  = new THREE.MeshBasicMaterial({ color: 0x080808 });
+
+            const geo  = new THREE.BoxGeometry(boxW, boxH, depth);
+            const mats = [sideColor, sideColor, rimTop, rimBot, frontMat, backMat];
+
+            const mesh = new THREE.Mesh(geo, mats);
+            group.add(mesh);
+
+            fitCamera(wrap.clientWidth, wrap.clientHeight);
+          }
+        );
+
+        function resize() {
+          const rw = Math.max(1, wrap.clientWidth);
+          const rh = Math.max(1, wrap.clientHeight);
+          renderer.setSize(rw, rh, false);
+          if (group.children.length) fitCamera(rw, rh);
+          else {
+            camera.aspect = rw / rh;
+            camera.updateProjectionMatrix();
+          }
+        }
+
+        function animate() {
+          requestAnimationFrame(animate);
+          if (!reduced) {
+            const elapsed = (performance.now() - t0) / 1000;
+            const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
+            group.position.y = yMid + yAmp * Math.cos(phase);
+            group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.58);
+          } else {
+            group.position.y = 0;
+            group.rotation.y = yawBase;
+          }
+          renderer.render(scene, camera);
+        }
+
+        if (typeof ResizeObserver !== "undefined") {
+          new ResizeObserver(resize).observe(wrap);
+        } else {
+          window.addEventListener("resize", resize);
+        }
+        resize();
+        animate();
+      })();
+    </script>
+  </body>
+</html>

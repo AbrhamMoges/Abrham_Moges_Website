@@ -211,10 +211,10 @@
 
       @media (max-width: 480px) {
         body {
-          overflow-y: auto;
+          overflow: hidden;
+          height: 100dvh;
           justify-content: flex-start;
-          padding-top: 5rem;
-          padding-bottom: 3rem;
+          padding: 3.5rem 0.75rem 0;
         }
 
         .about-corner-title {
@@ -223,6 +223,51 @@
 
         .about-corner-back {
           display: none;
+        }
+
+        /* PNG on left, 3D head overlaps from the right */
+        .about-cluster {
+          position: relative;
+          flex-direction: row;
+          align-items: center;
+          transform: none;
+          gap: 0;
+          width: 100%;
+          flex-shrink: 0;
+          min-height: min(48vw, 210px);
+        }
+
+        .about-title {
+          width: 100vw;
+          max-width: 100vw;
+          flex-shrink: 0;
+          transform: scale(1.3);
+          transform-origin: center center;
+        }
+
+        .about-head-wrap {
+          position: absolute;
+          right: 4vw;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 5;
+          margin-left: 0;
+        }
+
+        model-viewer.about-head {
+          height: min(48vw, 210px);
+          width: min(36vw, 160px);
+          min-height: 150px;
+          min-width: 110px;
+        }
+
+        .about-bio {
+          margin: 1rem 0 0;
+          width: 92vw;
+          font-size: 12.5px;
+          line-height: 1.4;
+          flex-shrink: 1;
+          overflow: hidden;
         }
 
         .about-ps2-nav {
@@ -250,46 +295,6 @@
             0 -1px #000, 0 1px #000,
             -1px -1px #000, 1px -1px #000,
             -1px 1px #000, 1px 1px #000;
-        }
-      }
-
-        /* PNG fills full width; 3D head floats absolutely on the right on top */
-        .about-cluster {
-          position: relative;
-          flex-direction: row;
-          align-items: center;
-          transform: none;
-          gap: 0;
-          width: 100%;
-        }
-
-        .about-head-wrap {
-          position: absolute;
-          right: -0.5rem;
-          top: 50%;
-          transform: translateY(-50%);
-          z-index: 5;
-          margin-left: 0;
-        }
-
-        model-viewer.about-head {
-          height: min(38vw, 175px);
-          width: min(28vw, 130px);
-          min-height: 120px;
-          min-width: 90px;
-        }
-
-        .about-title {
-          max-width: 100%;
-          width: 100%;
-          transform: scale(1.3);
-          transform-origin: center center;
-        }
-
-        .about-bio {
-          margin: -3rem 0 2rem;
-          width: 90vw;
-          font-size: 13px;
         }
       }
     </style>

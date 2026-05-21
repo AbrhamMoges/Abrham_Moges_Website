@@ -1,0 +1,153 @@
+
+<style>*{margin:0;padding:0;}canvas{display:block;border-radius:8px;background:#000;}</style>
+<canvas id="c" width="680" height="480"></canvas>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const W = 680, H = 480;
+const cx = W * 0.36, cy = H * 0.48;
+
+const NUM = 8;
+const RING_R = 108;
+const FOV = 340;
+const TILT = 0.18;
+
+// Each orb has its OWN theta that advances (traveling around the ring)
+// PLUS the whole ring spins via yAngle (Y-axis rotation)
+const orbs = Array.from({length: NUM}, (_, i) => ({
+  theta: (i / NUM) * Math.PI * 2,  // starting position on ring — evenly spaced
+  size: 4.5,
+  bright: 0.82,
+  pulseP: (i / NUM) * Math.PI * 2,
+  trail: []
+}));
+
+const TRAIL_LEN = 32;
+const Y_SPIN  = 0.006;   // Y-axis rotation speed (coin spin)
+const TRAVEL  = 0.012;   // speed particles travel around the ring (orbital flow)
+const TRAIL_SKIP = 0;
+
+// Gap: orbs fade when their theta passes through the open gap zone
+const GAP_CENTER = 0.0;  // radians (right side of ring)
+const GAP_HALF   = 0.52; // half-width of gap in radians
+
+let yAngle = 0;
+let t = 0;
+
+function get3D(theta) {
+  const lx = Math.cos(theta) * RING_R;
+  const ly = Math.sin(theta) * RING_R;
+
+  // X-tilt (ring leans back at top)
+  const tx = lx;
+  const ty = ly * Math.cos(TILT);
+  const tz = ly * Math.sin(TILT);
+
+  // Y-axis spin
+  const x3 =  tx * Math.cos(yAngle) + tz * Math.sin(yAngle);
+  const y3 =  ty;
+  const z3 = -tx * Math.sin(yAngle) + tz * Math.cos(yAngle);
+  return { x3, y3, z3 };
+}
+
+function project(x3, y3, z3) {
+  const scale = FOV / (FOV + z3);
+  return { x: cx + x3 * scale, y: cy + y3 * scale, scale, z3 };
+}
+
+function gapFade(theta) {
+  const nt = ((theta % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  const gc = ((GAP_CENTER % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+  let diff = Math.abs(nt - gc);
+  if (diff > Math.PI) diff = Math.PI*2 - diff;
+  if (diff < GAP_HALF) return Math.max(0, diff / GAP_HALF);
+  return 1;
+}
+
+function drawOrb(x, y, size, bright, scale, z3) {
+  const depth = (z3 + RING_R) / (RING_R * 2);
+  const b  = bright * (0.28 + depth * 0.72);
+  const sz = size * scale;
+
+  const g = ctx.createRadialGradient(x, y, 0, x, y, sz * 6);
+  g.addColorStop(0,    `rgba(215,240,255,${b})`);
+  g.addColorStop(0.15, `rgba(115,188,255,${b * 0.72})`);
+  g.addColorStop(0.48, `rgba(38,112,232,${b * 0.2})`);
+  g.addColorStop(1,    'rgba(4,28,158,0)');
+  ctx.beginPath();
+  ctx.arc(x, y, sz * 6, 0, Math.PI*2);
+  ctx.fillStyle = g;
+  ctx.fill();
+
+  const g2 = ctx.createRadialGradient(x, y, 0, x, y, sz * 2);
+  g2.addColorStop(0,   `rgba(245,252,255,${b})`);
+  g2.addColorStop(0.5, `rgba(155,210,255,${b * 0.55})`);
+  g2.addColorStop(1,   'rgba(50,130,255,0)');
+  ctx.beginPath();
+  ctx.arc(x, y, sz * 2, 0, Math.PI*2);
+  ctx.fillStyle = g2;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(x, y, Math.max(sz * 0.58, 0.5), 0, Math.PI*2);
+  ctx.fillStyle = `rgba(248,253,255,${b})`;
+  ctx.fill();
+}
+
+function frame() {
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Advance Y-axis spin
+  yAngle += Y_SPIN;
+
+  // Advance each particle's position along the ring (travel)
+  for (const o of orbs) {
+    o.theta += TRAVEL;
+  }
+
+  // Project all
+  const projected = orbs.map(o => {
+    const { x3, y3, z3 } = get3D(o.theta);
+    const proj = project(x3, y3, z3);
+    const fade = gapFade(o.theta);
+    return { o, proj, z3, fade };
+  }).sort((a, b) => a.z3 - b.z3);
+
+  for (const { o, proj, z3, fade } of projected) {
+    if (fade < 0.02) { o.trail = []; continue; }
+
+    const depth = (z3 + RING_R) / (RING_R * 2);
+    o.trail.push({ x: proj.x, y: proj.y, depth, scale: proj.scale, fade });
+    if (o.trail.length > TRAIL_LEN) o.trail.shift();
+
+    // Draw trail
+    const len = o.trail.length;
+    for (let j = 1; j < len; j++) {
+      const frac = j / len;
+      const f2   = frac * frac;
+      const prev = o.trail[j-1], curr = o.trail[j];
+      const a  = f2 * 0.42 * (0.18 + curr.depth * 0.82) * curr.fade;
+      const lw = f2 * o.size * curr.scale * 0.88;
+      if (a < 0.01) continue;
+      ctx.beginPath();
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(curr.x, curr.y);
+      ctx.strokeStyle = `rgba(55,148,255,${a})`;
+      ctx.lineWidth = Math.max(lw, 0.3);
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    const pulse = 0.82 + 0.18 * Math.sin(t * 1.9 + o.pulseP);
+    drawOrb(proj.x, proj.y, o.size, o.bright * pulse * fade, proj.scale, z3);
+  }
+
+  t += 0.016;
+  requestAnimationFrame(frame);
+}
+
+ctx.fillStyle = '#000';
+ctx.fillRect(0, 0, W, H);
+frame();
+</script>

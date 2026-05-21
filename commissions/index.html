@@ -141,9 +141,15 @@
       }
       .commissions-cube-row > .commissions-tile:nth-child(7) {
         z-index: 7;
+        width: min(405px, 68vmin);
+        height: min(405px, 68vmin);
+        margin-top: -3rem;
       }
       .commissions-cube-row > .commissions-tile:nth-child(8) {
         z-index: 8;
+      }
+      .commissions-cube-row > .commissions-tile:nth-child(9) {
+        z-index: 9;
       }
 
       .commissions-tile-pop {
@@ -194,6 +200,16 @@
       body.commissions-intro-on .commissions-tile:nth-child(6) .commissions-tile-pop {
         animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
           var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 5ms) both;
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(7) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 6ms) both;
+      }
+
+      body.commissions-intro-on .commissions-tile:nth-child(8) .commissions-tile-pop {
+        animation: commission-intro-scale calc(var(--commission-intro-pop-ms) * 1ms)
+          var(--commission-intro-ease) calc(var(--commission-intro-pop-ms) * 7ms) both;
       }
 
       body.commissions-intro-on.commissions-intro-finished
@@ -764,6 +780,30 @@
             ></iframe>
           </div>
         </div>
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-ytdream-iframe"
+              title="YouTube Gaming DreamCon 3D"
+              src="../youtube_dreamcon_3d.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+        <div class="commissions-tile">
+          <div class="commissions-tile-pop">
+            <iframe
+              class="commissions-hxouse-iframe"
+              title="HXOUSE Labs World Tour 3D"
+              src="../hxouse_labs_tour_3d.html"
+              width="300"
+              height="300"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -891,7 +931,7 @@
           window.clearTimeout(commissionIntroFinishTimer);
           commissionIntroFinishTimer = window.setTimeout(function () {
             body.classList.add("commissions-intro-finished");
-          }, introPopMs * 6 + 32);
+          }, introPopMs * 8 + 32);
         }
 
         function startCommissionIntro() {
