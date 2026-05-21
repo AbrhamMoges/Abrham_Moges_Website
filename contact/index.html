@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact — Abrham Moges</title>
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        scrollbar-width: none;
+        background:
+          url('../ps2_background_gradient_v2.svg') center center / 160% 160% no-repeat,
+          #060817;
+      }
+
+      html::-webkit-scrollbar { display: none; }
+
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100dvh;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      /* ── Corner labels ── */
+      .contact-corner-title,
+      .contact-corner-back {
+        position: fixed;
+        top: clamp(1.5rem, 4.2vh, 2.8rem);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 30px;
+        line-height: 1;
+        z-index: 5;
+        text-shadow:
+          -1px 0 #000, 1px 0 #000,
+          0 -1px #000, 0 1px #000,
+          -1px -1px #000, 1px -1px #000,
+          -1px 1px #000, 1px 1px #000;
+      }
+
+      .contact-corner-title {
+        right: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #c8ca47;
+      }
+
+      .contact-corner-back {
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        color: #f5f5f5;
+        text-decoration: none;
+      }
+
+      .contact-corner-back:hover { opacity: 0.9; }
+      .contact-corner-back:focus-visible {
+        outline: 1px solid #fff;
+        outline-offset: 4px;
+      }
+
+      /* ── Main card ── */
+      .contact-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(1.2rem, 3vh, 2rem);
+        text-align: center;
+        max-width: min(90vw, 520px);
+        z-index: 1;
+      }
+
+      .contact-heading {
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: clamp(28px, 6vw, 52px);
+        font-weight: normal;
+        color: #c8ca47;
+        text-shadow:
+          -1px 0 #000, 1px 0 #000,
+          0 -1px #000, 0 1px #000,
+          -1px -1px #000, 1px -1px #000,
+          -1px 1px #000, 1px 1px #000;
+        letter-spacing: 0.04em;
+      }
+
+      .contact-sub {
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: clamp(13px, 2.2vw, 18px);
+        color: rgba(255, 255, 255, 0.75);
+        line-height: 1.5;
+      }
+
+      .contact-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        width: 100%;
+      }
+
+      .contact-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: clamp(15px, 2.8vw, 22px);
+        color: #fff;
+        text-decoration: none;
+        padding: 0.65rem 1.4rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        transition: background 0.2s, border-color 0.2s;
+        text-shadow:
+          -1px 0 #000, 1px 0 #000,
+          0 -1px #000, 0 1px #000;
+      }
+
+      .contact-link:hover {
+        background: rgba(255, 255, 255, 0.13);
+        border-color: rgba(200, 202, 71, 0.55);
+      }
+
+      .contact-link:focus-visible {
+        outline: 1px solid #c8ca47;
+        outline-offset: 3px;
+      }
+
+      .contact-footer {
+        position: fixed;
+        left: clamp(0.9rem, 2.4vw, 1.8rem);
+        bottom: clamp(0.65rem, 2.2vh, 1.35rem);
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        z-index: 4;
+      }
+
+      /* ── Gaussian blue haze ── */
+      .contact-blue-haze {
+        position: fixed;
+        inset: -20%;
+        z-index: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          ellipse 90% 90% at 35% 50%,
+          rgba(30, 60, 200, 0.45) 0%,
+          rgba(15, 30, 140, 0.30) 50%,
+          rgba(5, 10, 80, 0.0) 100%
+        );
+        filter: blur(120px);
+      }
+
+      /* ── Particles ── */
+      #contact-particles {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+
+      /* ── PS2 Cylinder ── */
+      model-viewer.contact-cylinder {
+        position: fixed;
+        top: 50%;
+        left: 35%;
+        transform: translate(-50%, -50%);
+        width: min(95vmin, 1050px);
+        height: min(95vmin, 1050px);
+        background-color: transparent;
+        --poster-color: transparent;
+        z-index: 1;
+        filter: saturate(5) hue-rotate(-15deg) brightness(0.8);
+        mix-blend-mode: screen;
+      }
+
+      /* ── Contact nav links ── */
+      .contact-nav {
+        position: fixed;
+        left: 48%;
+        right: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 1.45em;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16pt;
+        font-weight: 400;
+        line-height: 1;
+        color: #7a9eb8;
+        filter: blur(0.65px);
+      }
+
+      .contact-nav a {
+        color: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .contact-nav a:hover { opacity: 0.88; }
+      .contact-nav a:focus-visible {
+        outline: 1px solid #7a9eb8;
+        outline-offset: 4px;
+      }
+
+      .contact-nav:has(a:focus-visible) { filter: none; }
+
+      /* ── PS2 mobile nav ── */
+      .contact-ps2-nav {
+        display: none;
+      }
+
+      @media (max-width: 780px) {
+        .contact-corner-title,
+        .contact-corner-back {
+          font-size: clamp(16px, 5vw, 22px);
+        }
+
+        .contact-blue-haze {
+          background: radial-gradient(
+            ellipse 90% 90% at 30% 50%,
+            rgba(30, 60, 200, 0.45) 0%,
+            rgba(15, 30, 140, 0.30) 50%,
+            rgba(5, 10, 80, 0.0) 100%
+          );
+        }
+
+        model-viewer.contact-cylinder {
+          left: 50%;
+          width: min(96vmin, 700px);
+          height: min(96vmin, 700px);
+        }
+
+        .contact-nav {
+          left: 5vw;
+          right: auto;
+          top: 50%;
+          bottom: auto;
+          transform: translateY(-50%);
+          flex-direction: column;
+          gap: 1.3em;
+          font-size: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        html {
+          background-size: 300% 300%;
+        }
+
+        .contact-blue-haze {
+          inset: -30%;
+          background: radial-gradient(
+            ellipse 100% 100% at 30% 50%,
+            rgba(30, 60, 200, 0.55) 0%,
+            rgba(15, 30, 140, 0.38) 50%,
+            rgba(5, 10, 80, 0.0) 100%
+          );
+          filter: blur(90px);
+        }
+
+        #grain-svg {
+          opacity: 0.28 !important;
+        }
+
+        model-viewer.contact-cylinder {
+          left: 30%;
+          width: 130vmin;
+          height: 130vmin;
+        }
+
+        .contact-corner-back {
+          display: none;
+        }
+
+        .contact-nav {
+          left: auto;
+          right: 22vw;
+          top: 50%;
+          transform: translateY(-50%);
+          bottom: auto;
+          font-size: 19pt;
+          gap: 1.45em;
+        }
+
+        .contact-ps2-nav {
+          display: flex;
+          position: fixed;
+          bottom: 10vh;
+          left: 50%;
+          transform: translateX(-50%);
+          align-items: center;
+          gap: 1.6rem;
+          z-index: 9999;
+        }
+
+        .contact-ps2-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.45rem;
+          font-family: Calibri, "Segoe UI", Arial, sans-serif;
+          font-size: 15px;
+          font-weight: normal;
+          color: #fff;
+          text-decoration: none;
+          text-shadow:
+            -1px 0 #000, 1px 0 #000,
+            0 -1px #000, 0 1px #000,
+            -1px -1px #000, 1px -1px #000,
+            -1px 1px #000, 1px 1px #000;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="contact-blue-haze" aria-hidden="true"></div>
+    <canvas id="contact-particles" aria-hidden="true"></canvas>
+
+    <a class="contact-corner-back" href="../home/">Back</a>
+    <p class="contact-corner-title">Contact Me</p>
+
+    <model-viewer
+      class="contact-cylinder"
+      src="../ps2%20cylinder.glb"
+      alt="PS2 cylinder"
+      camera-controls
+      touch-action="pan-y"
+      interaction-prompt="none"
+      environment-image="neutral"
+      tone-mapping="aces"
+      shadow-intensity="0"
+      exposure="1.4"
+      autoplay
+    ></model-viewer>
+
+    <nav class="contact-nav" aria-label="Contact links">
+      <a href="#">Resume</a>
+      <a href="https://www.instagram.com/abrham.moges" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.linkedin.com/in/abrham-moges" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:abraham.moges7@gmail.com">Email</a>
+    </nav>
+
+    <nav class="contact-ps2-nav" aria-label="Mobile navigation">
+      <a class="contact-ps2-btn" href="../home/">
+        <svg width="44" height="44" viewBox="0 0 32 32" aria-hidden="true">
+          <defs>
+            <radialGradient id="contact-xbg" cx="40%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#3a3a4a"/>
+              <stop offset="100%" stop-color="#0d0d14"/>
+            </radialGradient>
+          </defs>
+          <circle cx="16" cy="16" r="15" fill="url(#contact-xbg)" stroke="#555" stroke-width="1.2"/>
+          <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        Back
+      </a>
+      <a class="contact-ps2-btn" href="../about/">
+        <svg width="44" height="44" viewBox="0 0 32 32" aria-hidden="true">
+          <defs>
+            <radialGradient id="contact-obg" cx="40%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#3a3a4a"/>
+              <stop offset="100%" stop-color="#0d0d14"/>
+            </radialGradient>
+          </defs>
+          <circle cx="16" cy="16" r="15" fill="url(#contact-obg)" stroke="#555" stroke-width="1.2"/>
+          <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+        </svg>
+        Next
+      </a>
+    </nav>
+
+    <footer class="contact-footer">© Abrham Moges</footer>
+
+    <script>
+      (function () {
+        var mv = document.querySelector("model-viewer.contact-cylinder");
+        var reduced = typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (mv && reduced) mv.removeAttribute("autoplay");
+      })();
+    </script>
+
+    <!-- Particles -->
+    <script>
+      (function () {
+        var cv = document.getElementById("contact-particles");
+        var ctx = cv.getContext("2d");
+
+        var W, H, CX, CY;
+
+        var NUM = 8, RING_R = 48, FOV = 340, TILT = 0.18;
+        var TRAIL_LEN = 32, Y_SPIN = 0.006, TRAVEL = 0.012;
+        var GAP_CENTER = 0.0, GAP_HALF = 0.52;
+
+        var orbs = Array.from({ length: NUM }, function (_, i) {
+          return { theta: (i / NUM) * Math.PI * 2, size: 10, bright: 0.82, pulseP: (i / NUM) * Math.PI * 2, trail: [] };
+        });
+
+        var yAngle = 0, T = 0;
+
+        function resize() {
+          W = cv.width = window.innerWidth;
+          H = cv.height = window.innerHeight;
+          CX = W <= 480 ? W * 0.30 : W * 0.35;
+          CY = H / 2;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        function get3D(theta) {
+          var lx = Math.cos(theta) * RING_R, ly = Math.sin(theta) * RING_R;
+          var tx = lx, ty = ly * Math.cos(TILT), tz = ly * Math.sin(TILT);
+          return {
+            x3: tx * Math.cos(yAngle) + tz * Math.sin(yAngle),
+            y3: ty,
+            z3: -tx * Math.sin(yAngle) + tz * Math.cos(yAngle)
+          };
+        }
+
+        function project(x3, y3, z3) {
+          var scale = FOV / (FOV + z3);
+          return { x: CX + x3 * scale, y: CY + y3 * scale, scale: scale, z3: z3 };
+        }
+
+        function gapFade(theta) {
+          var nt = ((theta % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+          var gc = ((GAP_CENTER % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+          var diff = Math.abs(nt - gc);
+          if (diff > Math.PI) diff = Math.PI * 2 - diff;
+          if (diff < GAP_HALF) return Math.max(0, diff / GAP_HALF);
+          return 1;
+        }
+
+        function drawOrb(x, y, size, bright, scale, z3) {
+          var depth = (z3 + RING_R) / (RING_R * 2);
+          var b = bright * (0.28 + depth * 0.72);
+          var sz = size * scale;
+
+          var g = ctx.createRadialGradient(x, y, 0, x, y, sz * 6);
+          g.addColorStop(0, "rgba(215,240,255," + b + ")");
+          g.addColorStop(0.15, "rgba(115,188,255," + (b * 0.72) + ")");
+          g.addColorStop(0.48, "rgba(38,112,232," + (b * 0.2) + ")");
+          g.addColorStop(1, "rgba(4,28,158,0)");
+          ctx.beginPath(); ctx.arc(x, y, sz * 6, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+
+          var g2 = ctx.createRadialGradient(x, y, 0, x, y, sz * 2);
+          g2.addColorStop(0, "rgba(245,252,255," + b + ")");
+          g2.addColorStop(0.5, "rgba(155,210,255," + (b * 0.55) + ")");
+          g2.addColorStop(1, "rgba(50,130,255,0)");
+          ctx.beginPath(); ctx.arc(x, y, sz * 2, 0, Math.PI * 2); ctx.fillStyle = g2; ctx.fill();
+
+          ctx.beginPath(); ctx.arc(x, y, Math.max(sz * 0.58, 0.5), 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(248,253,255," + b + ")"; ctx.fill();
+        }
+
+        var reduced = typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        function frame() {
+          ctx.fillStyle = "rgba(0,0,0,0.5)";
+          ctx.fillRect(0, 0, W, H);
+
+          if (!reduced) {
+            yAngle += Y_SPIN;
+            for (var i = 0; i < orbs.length; i++) orbs[i].theta += TRAVEL;
+          }
+
+          var projected = orbs.map(function (o) {
+            var p = get3D(o.theta), proj = project(p.x3, p.y3, p.z3);
+            return { o: o, proj: proj, z3: p.z3, fade: gapFade(o.theta) };
+          }).sort(function (a, b) { return a.z3 - b.z3; });
+
+          for (var k = 0; k < projected.length; k++) {
+            var item = projected[k], o = item.o, proj = item.proj, z3 = item.z3, fade = item.fade;
+            if (fade < 0.02) { o.trail = []; continue; }
+
+            var depth = (z3 + RING_R) / (RING_R * 2);
+            o.trail.push({ x: proj.x, y: proj.y, depth: depth, scale: proj.scale, fade: fade });
+            if (o.trail.length > TRAIL_LEN) o.trail.shift();
+
+            var len = o.trail.length;
+            for (var j = 1; j < len; j++) {
+              var frac = j / len, f2 = frac * frac;
+              var prev = o.trail[j - 1], curr = o.trail[j];
+              var a = f2 * 0.42 * (0.18 + curr.depth * 0.82) * curr.fade;
+              var lw = f2 * o.size * curr.scale * 0.88;
+              if (a < 0.01) continue;
+              ctx.beginPath();
+              ctx.moveTo(prev.x, prev.y);
+              ctx.lineTo(curr.x, curr.y);
+              ctx.strokeStyle = "rgba(55,148,255," + a + ")";
+              ctx.lineWidth = Math.max(lw, 0.3);
+              ctx.lineCap = "round";
+              ctx.stroke();
+            }
+
+            var pulse = 0.82 + 0.18 * Math.sin(T * 1.9 + o.pulseP);
+            drawOrb(proj.x, proj.y, o.size, o.bright * pulse * fade, proj.scale, z3);
+          }
+
+          T += 0.016;
+          requestAnimationFrame(frame);
+        }
+
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, W, H);
+        frame();
+      })();
+    </script>
+
+    <!-- Film grain overlay -->
+    <svg id="grain-svg" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:999;pointer-events:none;opacity:0.18;">
+      <filter id="grain-filter" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.88" numOctaves="4" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grain-filter)"/>
+    </svg>
+    <script>
+      (function () {
+        var turb = document.querySelector("#grain-filter feTurbulence");
+        var seed = 0;
+        var reduced = typeof window.matchMedia === "function" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!reduced) {
+          (function tick() {
+            seed = (seed + 1) % 200;
+            turb.setAttribute("seed", seed);
+            requestAnimationFrame(tick);
+          })();
+        }
+      })();
+    </script>
+
+  </body>
+</html>
