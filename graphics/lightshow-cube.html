@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html { background: transparent; height: 100%; overflow: visible; }
+    body {
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100%;
+      min-height: 100dvh;
+      margin: 0;
+      overflow: visible;
+      padding-block: 16px;
+    }
+    .scene {
+      width: min(300px, 52vmin);
+      height: min(300px, 52vmin);
+      flex: 0 0 auto;
+      perspective: 700px;
+      perspective-origin: center center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .scene-inner {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      animation: cube-hover 3.2s ease-in-out infinite;
+    }
+    @keyframes cube-hover {
+      0%, 100% { transform: rotateX(-20deg) rotateY(-14deg) translateY(4px) scale(0.40); }
+      50%       { transform: rotateX(-20deg) rotateY(-14deg) translateY(-12px) scale(0.40); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scene-inner { animation: none; transform: rotateX(-20deg) rotateY(-14deg) scale(0.40); }
+    }
+    .face {
+      position: absolute;
+      left: 50%; top: 50%;
+      overflow: hidden;
+      backface-visibility: hidden;
+      transform-style: preserve-3d;
+    }
+    .front  { width: 280px; height: 280px; transform: translate(-50%,-50%) translateZ(35px); }
+    .back   { width: 280px; height: 280px; transform: translate(-50%,-50%) rotateY(180deg) translateZ(35px); background: #000; border: 1px solid rgba(255,255,255,0.15); }
+    .right  { width: 70px;  height: 280px; transform: translate(-50%,-50%) rotateY(90deg) translateZ(140px);  background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); }
+    .left   { width: 70px;  height: 280px; transform: translate(-50%,-50%) rotateY(-90deg) translateZ(140px); background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1); }
+    .top    { width: 280px; height: 70px;  transform: translate(-50%,-50%) rotateX(90deg) translateZ(140px);  background: #0d0d0d; border: 1px solid rgba(255,255,255,0.1); }
+    .bottom { width: 280px; height: 70px;  transform: translate(-50%,-50%) rotateX(-90deg) translateZ(140px); background: #0d0d0d; border: 1px solid rgba(255,255,255,0.1); }
+    .front img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="scene-inner">
+      <div class="face front"><img src="ohso-light-show.jpg" alt="Light Show flyer" /></div>
+      <div class="face back"></div>
+      <div class="face right"></div>
+      <div class="face left"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
+    </div>
+  </div>
+</body>
+</html>

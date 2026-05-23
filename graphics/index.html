@@ -10,7 +10,14 @@
         --graphics-gradient: linear-gradient(to right, #d1d1d1, #4a4a4a);
         --page-fade-ms: 1400;
         --page-fade-out-ms: 1250;
-        --graphics-blur: 0.55px;
+        --retro-gaussian-blur: 0.85px;
+        --retro-blue-wash: rgba(100, 155, 255, 0.042);
+        --graphics-intro-pop-ms: 620;
+        --graphics-intro-ease: cubic-bezier(0.34, 1.15, 0.53, 1);
+        --graphics-corner-top: clamp(1.5rem, 4.2vh, 2.8rem);
+        --cube-nudge-y: clamp(1.65rem, 4.8vh, 3.35rem);
+        --cube-nudge-x: clamp(1.35rem, 4.5vw, 2.85rem);
+        --graphics-main-top: calc(var(--graphics-corner-top) + 2.5rem + var(--cube-nudge-y));
       }
 
       * { box-sizing: border-box; }
@@ -22,13 +29,22 @@
         min-height: 100dvh;
         background: var(--graphics-gradient);
         background-color: #8a8a8a;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         padding: clamp(1rem, 4vw, 2rem);
         opacity: 0;
         transition: opacity calc(var(--page-fade-ms) * 1ms) ease-out;
-        filter: blur(var(--graphics-blur));
+        position: relative;
+        overflow: hidden;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 9998;
+        pointer-events: none;
+        background: var(--retro-blue-wash);
+        -webkit-backdrop-filter: blur(var(--retro-gaussian-blur)) saturate(0.96);
+        backdrop-filter: blur(var(--retro-gaussian-blur)) saturate(0.96);
       }
 
       body.is-page-ready { opacity: 1; }
@@ -39,17 +55,102 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        body {
-          transition-duration: 0.01ms;
-          filter: none;
-        }
+        body { transition-duration: 0.01ms; }
         body.is-page-leaving { transition-duration: 0.01ms; }
+        body::after {
+          -webkit-backdrop-filter: none;
+          backdrop-filter: none;
+          background: transparent;
+        }
       }
+
+      @keyframes graphics-intro-scale {
+        from { transform: scale(0); }
+        to   { transform: scale(1); }
+      }
+
+      .graphics-main {
+        position: fixed;
+        top: var(--graphics-main-top);
+        left: calc(clamp(0.9rem, 2.4vw, 1.8rem) + var(--cube-nudge-x));
+        right: auto;
+        z-index: 100;
+        isolation: isolate;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        margin: 0;
+        overflow: visible;
+      }
+
+      .graphics-cube-row {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: flex-start;
+        gap: clamp(0, 0.45vw, 0.35rem);
+      }
+
+      .graphics-tile {
+        flex: 0 0 auto;
+        width: min(220px, 37vmin);
+        height: min(220px, 37vmin);
+        position: relative;
+        z-index: 1;
+        transform-origin: center center;
+        overflow: visible;
+        cursor: pointer;
+      }
+
+      .graphics-tile-pop {
+        width: 100%;
+        height: 100%;
+        transform-origin: center center;
+      }
+
+      .graphics-tile-pop iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        pointer-events: none;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .graphics-tile-pop { transform: scale(0); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .graphics-tile-pop {
+          animation: none !important;
+          transform: scale(1) !important;
+          will-change: auto;
+        }
+      }
+
+      body.graphics-intro-on .graphics-tile:nth-child(1) .graphics-tile-pop {
+        animation: graphics-intro-scale calc(var(--graphics-intro-pop-ms) * 1ms)
+          var(--graphics-intro-ease) 0ms both;
+      }
+
+      body.graphics-intro-on .graphics-tile:nth-child(2) .graphics-tile-pop {
+        animation: graphics-intro-scale calc(var(--graphics-intro-pop-ms) * 1ms)
+          var(--graphics-intro-ease) 80ms both;
+      }
+
+      body.graphics-intro-on.graphics-intro-finished
+        .graphics-cube-row > .graphics-tile .graphics-tile-pop {
+        animation: none;
+        transform: scale(1);
+        will-change: auto;
+      }
+
 
       .graphics-corner-title,
       .graphics-corner-back {
         position: fixed;
-        top: clamp(1.5rem, 4.2vh, 2.8rem);
+        top: var(--graphics-corner-top);
         margin: 0;
         font-family: Calibri, "Segoe UI", Arial, sans-serif;
         font-size: 30px;
@@ -96,6 +197,180 @@
         z-index: 4;
       }
 
+      .ls-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding-left: clamp(4rem, 12vw, 10rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .ls-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .ls-popup-box {
+        width: min(540px, 64vmin);
+        height: min(540px, 64vmin);
+        transform: scale(0);
+        transform-origin: left center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1);
+        will-change: transform;
+      }
+
+      .ls-popup-overlay.is-open .ls-popup-box {
+        transform: scale(1);
+      }
+
+      .ls-popup-box img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .ls-popup-text-block {
+        position: absolute;
+        top: 10%;
+        left: 58%;
+        width: clamp(280px, 38vw, 520px);
+        max-height: 70vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+      }
+
+      .ls-popup-overlay.is-open .ls-popup-text-block {
+        opacity: 1;
+      }
+
+      .ls-popup-title {
+        margin: 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 35px;
+        font-weight: normal;
+        color: #c8ca47;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+        line-height: 1.3;
+      }
+
+      .ls-popup-subtitle {
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      .ls-popup-desc {
+        margin: 1.4rem 0 0;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 20px;
+        line-height: 1.6;
+        text-align: center;
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .ls-popup-overlay { transition: none; }
+        .ls-popup-box { transition: none; }
+        .ls-popup-text-block { transition: none; }
+      }
+
+      .ps2-nav {
+        position: absolute;
+        bottom: clamp(3rem, 8vh, 6rem);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1.6rem;
+        z-index: 9999;
+      }
+
+      .ps2-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 22px;
+        font-weight: normal;
+        color: #fff;
+        text-shadow:
+          -1px 0 #000,
+          1px 0 #000,
+          0 -1px #000,
+          0 1px #000,
+          -1px -1px #000,
+          1px -1px #000,
+          -1px 1px #000,
+          1px 1px #000;
+      }
+
+      @media (max-width: 780px) {
+        .ls-popup-overlay {
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding-left: 0;
+          padding: 1rem;
+          gap: 1rem;
+        }
+        .ls-popup-text-block {
+          position: static;
+          width: 90vw;
+          max-height: 35vh;
+        }
+        .ls-popup-box {
+          width: min(85vw, 85vh);
+          height: min(85vw, 85vh);
+        }
+        .ps2-nav {
+          position: absolute;
+          bottom: 1.8rem;
+          left: 50%;
+          align-self: unset;
+        }
+        .ps2-btn { font-size: 15px; }
+        .ps2-btn svg { width: 36px; height: 36px; }
+      }
+
       @media (max-width: 480px) {
         .graphics-corner-title,
         .graphics-corner-back {
@@ -108,6 +383,85 @@
     <a class="graphics-corner-back" href="../home/">Back</a>
     <p class="graphics-corner-title">Graphics</p>
     <footer class="graphics-footer">© Abrham Moges</footer>
+
+    <main class="graphics-main" role="main">
+      <div class="graphics-cube-row">
+        <div class="graphics-tile" id="lightshow-tile">
+          <div class="graphics-tile-pop">
+            <iframe
+              class="graphics-cube-iframe"
+              title="Light Show flyer cube"
+              src="lightshow-cube.html"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+        <div class="graphics-tile" id="baldkitty-tile">
+          <div class="graphics-tile-pop">
+            <iframe
+              class="graphics-cube-iframe"
+              title="Bald Kitty June flyer cube"
+              src="baldkitty-cube.html"
+              loading="eager"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="ls-popup-overlay" id="ls-popup-overlay" aria-hidden="true">
+      <div class="ls-popup-text-block">
+        <p class="ls-popup-title">Light Show<br>
+          <span class="ls-popup-subtitle">OH SO Presents</span><br>
+          <span class="ls-popup-subtitle">October 18</span></p>
+        <p class="ls-popup-desc">Event flyer design for OH SO's Light Show — a premium club experience at 1241 Flushing Ave, Brooklyn, NY 11237. Sounds by: OH SO, DJ GUWOP (Special Guest DJ), Godspeed.</p>
+      </div>
+      <div class="ls-popup-box" id="ls-popup-box">
+        <img src="ohso-light-show.jpg" alt="Light Show event flyer" />
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="ls-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="lsbg" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#lsbg)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+      </div>
+    </div>
+
+    <div class="ls-popup-overlay" id="bk-popup-overlay" aria-hidden="true">
+      <div class="ls-popup-text-block">
+        <p class="ls-popup-title">Bald Kitty<br>
+          <span class="ls-popup-subtitle">June</span></p>
+        <p class="ls-popup-desc">Event flyer design for Bald Kitty — June edition.</p>
+      </div>
+      <div class="ls-popup-box" id="bk-popup-box">
+        <img src="bald-kitty-june.jpg" alt="Bald Kitty June flyer" />
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="bk-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="bkbg" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#bkbg)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+      </div>
+    </div>
+
     <script>
       (function () {
         var body = document.body;
@@ -116,10 +470,42 @@
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var fadeOutMs = reduced ? 0 : 1250;
 
+        var introPopMs =
+          parseFloat(
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--graphics-intro-pop-ms")
+              .trim()
+          ) || 620;
+        var graphicsIntroFinishTimer = null;
+
+        function scheduleGraphicsIntroFinish() {
+          if (reduced) return;
+          window.clearTimeout(graphicsIntroFinishTimer);
+          graphicsIntroFinishTimer = window.setTimeout(function () {
+            body.classList.add("graphics-intro-finished");
+          }, introPopMs * 1 + 80 + 32);
+        }
+
+        function startGraphicsIntro() {
+          if (reduced) {
+            body.classList.remove("graphics-intro-on");
+            body.classList.add("graphics-intro-finished");
+            return;
+          }
+          body.classList.remove("graphics-intro-finished", "graphics-intro-on");
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              body.classList.add("graphics-intro-on");
+              scheduleGraphicsIntroFinish();
+            });
+          });
+        }
+
         function markReady() {
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               body.classList.add("is-page-ready");
+              startGraphicsIntro();
             });
           });
         }
@@ -134,6 +520,7 @@
           if (e.persisted) {
             body.classList.remove("is-page-leaving");
             body.classList.add("is-page-ready");
+            startGraphicsIntro();
           }
         });
 
@@ -166,14 +553,9 @@
           body.classList.remove("is-page-ready");
           body.classList.add("is-page-leaving");
 
-          function go() {
-            window.location.href = dest;
-          }
+          function go() { window.location.href = dest; }
 
-          if (reduced) {
-            go();
-            return;
-          }
+          if (reduced) { go(); return; }
 
           var finished = false;
           function finish() {
@@ -191,6 +573,84 @@
             { once: true }
           );
           window.setTimeout(finish, fadeOutMs + 200);
+        });
+      })();
+
+      (function () {
+        var tile = document.getElementById("lightshow-tile");
+        var overlay = document.getElementById("ls-popup-overlay");
+        var backBtn = document.getElementById("ls-back-btn");
+
+        if (!tile || !overlay) return;
+
+        function openPopup() {
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+        }
+
+        var tapped = false;
+        tile.addEventListener("touchend", function (e) {
+          tapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { tapped = false; }, 600);
+        });
+        tile.addEventListener("click", function () {
+          if (!tapped) openPopup();
+        });
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest("#ls-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
+        });
+
+        if (backBtn) backBtn.addEventListener("click", closePopup);
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
+        });
+      })();
+
+      (function () {
+        var tile = document.getElementById("baldkitty-tile");
+        var overlay = document.getElementById("bk-popup-overlay");
+        var backBtn = document.getElementById("bk-back-btn");
+
+        if (!tile || !overlay) return;
+
+        function openPopup() {
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+        }
+
+        var tapped = false;
+        tile.addEventListener("touchend", function (e) {
+          tapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { tapped = false; }, 600);
+        });
+        tile.addEventListener("click", function () {
+          if (!tapped) openPopup();
+        });
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest("#bk-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
+        });
+
+        if (backBtn) backBtn.addEventListener("click", closePopup);
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
         });
       })();
     </script>
