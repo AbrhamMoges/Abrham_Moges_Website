@@ -148,6 +148,66 @@
         z-index: 4;
       }
 
+      /* ── Glass cube canvas ── */
+      #glcanvas {
+        position: fixed !important;
+        top: 20% !important;
+        left: 33% !important;
+        transform: translate(-50%, 0) !important;
+        width: 28vmin !important;
+        height: 28vmin !important;
+        z-index: 3 !important;
+        pointer-events: none;
+      }
+
+      /* ── Glass cube 2 canvas ── */
+      #glcanvas2 {
+        position: fixed !important;
+        top: 45% !important;
+        left: 16% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 28vmin !important;
+        height: 28vmin !important;
+        z-index: 3 !important;
+        pointer-events: none;
+      }
+
+      /* ── Glass cube 3 canvas ── */
+      #glcanvas3 {
+        position: fixed !important;
+        top: 65% !important;
+        left: 38% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 28vmin !important;
+        height: 28vmin !important;
+        z-index: 3 !important;
+        pointer-events: none;
+      }
+
+      /* ── Glass cube 4 canvas ── */
+      #glcanvas4 {
+        position: fixed !important;
+        top: 86% !important;
+        left: 22% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 28vmin !important;
+        height: 28vmin !important;
+        z-index: 3 !important;
+        pointer-events: none;
+      }
+
+      /* ── Glass cube 5 canvas ── */
+      #glcanvas5 {
+        position: fixed !important;
+        top: 22% !important;
+        left: 22% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 28vmin !important;
+        height: 28vmin !important;
+        z-index: 3 !important;
+        pointer-events: none;
+      }
+
       /* ── Gaussian blue haze ── */
       .contact-blue-haze {
         position: fixed;
@@ -261,6 +321,11 @@
           gap: 1.3em;
           font-size: 15px;
         }
+
+        #glcanvas, #glcanvas2, #glcanvas3, #glcanvas4, #glcanvas5 {
+          width: 26vmin !important;
+          height: 26vmin !important;
+        }
       }
 
       @media (max-width: 480px) {
@@ -329,10 +394,25 @@
             -1px -1px #000, 1px -1px #000,
             -1px 1px #000, 1px 1px #000;
         }
+
+        #glcanvas  { width: 32vmin !important; height: 32vmin !important; top: 35% !important; }
+        #glcanvas2 { width: 32vmin !important; height: 32vmin !important; top: 46% !important; }
+        #glcanvas3 { width: 32vmin !important; height: 32vmin !important; top: 55% !important; }
+        #glcanvas4 { width: 32vmin !important; height: 32vmin !important; top: 58% !important; }
+        #glcanvas5 { width: 32vmin !important; height: 32vmin !important; top: 33% !important; }
       }
     </style>
   </head>
   <body>
+    <!-- Glass Cube Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<canvas id="glcanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
+    <canvas id="glcanvas2" style="width:100%;height:100%;z-index:-1;"></canvas>
+    <canvas id="glcanvas3" style="width:100%;height:100%;z-index:-1;"></canvas>
+    <canvas id="glcanvas4" style="width:100%;height:100%;z-index:-1;"></canvas>
+    <canvas id="glcanvas5" style="width:100%;height:100%;z-index:-1;"></canvas>
+    <script src="glass-cube.js"></script>
+
     <div class="contact-blue-haze" aria-hidden="true"></div>
     <canvas id="contact-particles" aria-hidden="true"></canvas>
 
