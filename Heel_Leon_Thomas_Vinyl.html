@@ -83,6 +83,9 @@
           typeof window.matchMedia === "function" &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+        const isPopup = typeof URLSearchParams !== "undefined" &&
+          new URLSearchParams(window.location.search).has("popup");
+
         const HOVER_PERIOD_S = 3.35;
         const yLo = -0.065;
         const yHi = 0.098;
@@ -163,10 +166,10 @@
             }
 
             const frontMat = makeCoverShader(texture);
-            const sideColor = new THREE.MeshBasicMaterial({ color: 0x2a0c12 });
-            const rimTop = new THREE.MeshBasicMaterial({ color: 0x3f1420 });
-            const rimBot = new THREE.MeshBasicMaterial({ color: 0x1f080f });
-            const backMat = new THREE.MeshBasicMaterial({ color: 0x0a0305 });
+            const sideColor = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
+            const rimTop    = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.10 });
+            const rimBot    = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.06 });
+            const backMat   = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.04 });
 
             const geo = new THREE.BoxGeometry(boxW, boxH, depth);
             const mats = [
@@ -207,10 +210,14 @@
             const elapsed = (performance.now() - t0) / 1000;
             const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
             group.position.y = yMid + yAmp * Math.cos(phase);
-            group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.6);
+            if (isPopup) {
+              group.rotation.y += 0.022;
+            } else {
+              group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.6);
+            }
           } else {
             group.position.y = 0;
-            group.rotation.y = yawBase;
+            if (!isPopup) group.rotation.y = yawBase;
           }
           renderer.render(scene, camera);
         }

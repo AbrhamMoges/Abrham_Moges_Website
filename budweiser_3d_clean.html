@@ -160,13 +160,13 @@
       for (let i = 1; i < sp.length; i++) shape.lineTo(sp[i][0], sp[i][1]);
       shape.closePath();
 
-      const sideGeo = new THREE.ExtrudeGeometry(shape, { depth: 0.5, bevelEnabled: false });
+      const sideGeo = new THREE.ExtrudeGeometry(shape, { depth: 1.4, bevelEnabled: false });
       const sideMesh = new THREE.Mesh(sideGeo, [
         new THREE.MeshLambertMaterial({ color: 0x7a0000 }),
         new THREE.MeshLambertMaterial({ color: 0x3a0000 }),
         new THREE.MeshLambertMaterial({ color: 0x3a0000 }),
       ]);
-      sideMesh.position.z = -0.25;
+      sideMesh.position.z = -0.7;
 
       const faceGeo = new THREE.ShapeGeometry(shape);
 
@@ -180,7 +180,7 @@
       uvA.needsUpdate = true;
 
       const faceMesh = new THREE.Mesh(faceGeo, new THREE.MeshBasicMaterial({ map: tex }));
-      faceMesh.position.z = 0.255;
+      faceMesh.position.z = 0.705;
 
       const group = new THREE.Group();
       group.rotation.y = 0.52;
@@ -214,6 +214,7 @@
           const elapsed = (performance.now() - t0) / 1000;
           const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
           group.position.y = yMid + yAmp * Math.cos(phase);
+          group.rotation.y += 0.022;
         } else {
           group.position.y = 0;
         }

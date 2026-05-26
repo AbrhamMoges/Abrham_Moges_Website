@@ -34,34 +34,17 @@
         width: 100%;
         height: 100%;
       }
-      #crown-missing {
-        display: none;
-        padding: 0.75rem 1rem;
-        margin: 0 auto;
-        max-width: 18rem;
-        font: 14px/1.35 system-ui, sans-serif;
-        color: rgba(255, 255, 255, 0.92);
-        text-align: center;
-        background: rgba(0, 0, 0, 0.55);
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      #crown-missing.is-visible {
-        display: block;
-      }
     </style>
   </head>
   <body>
     <div id="wrap"><canvas id="c"></canvas></div>
-    <p id="crown-missing" role="status">
-      Missing <strong>crown-royal-mat.png</strong> — place it next to this HTML file.
-    </p>
 
     <script src="lib/three.r128.min.js"></script>
     <script>
       (function () {
         const wrap = document.getElementById("wrap");
         const canvas = document.getElementById("c");
+
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -69,14 +52,18 @@
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
-        camera.position.set(0, 0, 5);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const d1 = new THREE.DirectionalLight(0xffffff, 1.0);
+        d1.position.set(4, 4, 8);
+        scene.add(d1);
+        const d2 = new THREE.DirectionalLight(0xc8a0ff, 0.4);
+        d2.position.set(-4, 0, 3);
+        scene.add(d2);
 
         const group = new THREE.Group();
+        group.rotation.x = 0.1;
         scene.add(group);
-
-        const viewScale = 0.84;
-        let planeW = 4;
-        let planeH = 4;
 
         const reduced =
           typeof window.matchMedia === "function" &&
@@ -89,95 +76,95 @@
         const yAmp = (yHi - yLo) / 2;
         let t0 = performance.now();
 
+        const depth = 0.55;
+        let matW = 5.0;
+        let matH = 5.0;
+
         function fitCamera(rw, rh) {
           camera.aspect = rw / rh;
-          const imgAspect = planeW / planeH;
-          const viewAspect = rw / rh;
           const vFov = (camera.fov * Math.PI) / 180;
-          const margin = 0.98;
+          const margin = 0.90;
+          const viewAspect = rw / rh;
+          const imgAspect = matW / matH;
           let dist;
           if (viewAspect >= imgAspect) {
-            dist = planeH / 2 / Math.tan(vFov / 2) / margin;
+            dist = matH / 2 / Math.tan(vFov / 2) / margin;
           } else {
             const hFov = 2 * Math.atan(Math.tan(vFov / 2) * viewAspect);
-            dist = planeW / 2 / Math.tan(hFov / 2) / margin;
+            dist = matW / 2 / Math.tan(hFov / 2) / margin;
           }
-          camera.position.z = dist / viewScale;
-          camera.position.x = 0;
-          camera.position.y = 0;
+          camera.position.set(0, 0, dist);
           camera.lookAt(0, 0, 0);
           camera.updateProjectionMatrix();
         }
 
+        // Measured mat bounds within the 1024×1024 PNG (non-black pixel region)
+        const PX_L = 30, PX_R = 1013, PX_T = 196, PX_B = 851, IMG = 1024;
+        const uvL = PX_L / IMG;
+        const uvR = PX_R / IMG;
+        const uvVBot = 1 - PX_B / IMG; // Three.js v=0 at bottom of texture
+        const uvVTop = 1 - PX_T / IMG;
+
+        // Use the mat's actual 3:2 aspect ratio
+        const matAspect = (PX_R - PX_L) / (PX_B - PX_T); // ≈ 1.5
+        const longSide = 5.0;
+        matW = longSide;
+        matH = longSide / matAspect;
+
+        const hw = matW / 2;
+        const hh = matH / 2;
+
+        const shape = new THREE.Shape();
+        shape.moveTo(-hw, -hh);
+        shape.lineTo( hw, -hh);
+        shape.lineTo( hw,  hh);
+        shape.lineTo(-hw,  hh);
+        shape.closePath();
+
+        const sideGeo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false });
+        const sideMesh = new THREE.Mesh(sideGeo, [
+          new THREE.MeshLambertMaterial({ color: 0x1a0830 }),
+          new THREE.MeshLambertMaterial({ color: 0x0d0420 }),
+        ]);
+        sideMesh.position.z = -depth / 2;
+
+        const faceGeo = new THREE.ShapeGeometry(shape);
+
+        fitCamera(Math.max(1, wrap.clientWidth), Math.max(1, wrap.clientHeight));
+
         const loader = new THREE.TextureLoader();
-        loader.load(
-          "crown-royal-mat.png",
-          function (texture) {
-            texture.encoding = THREE.sRGBEncoding;
-            texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        loader.load("crown-royal-mat.png", function (texture) {
+          texture.encoding = THREE.sRGBEncoding;
+          texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
 
-            const iw = texture.image.width;
-            const ih = texture.image.height;
-            const a = iw / ih;
-
-            const longSide = 5.5;
-            if (a >= 1) {
-              planeW = longSide;
-              planeH = longSide / a;
-            } else {
-              planeH = longSide;
-              planeW = longSide * a;
-            }
-
-            const geo = new THREE.PlaneGeometry(planeW, planeH);
-            const mat = new THREE.ShaderMaterial({
-              uniforms: { map: { value: texture } },
-              vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                  vUv = uv;
-                  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-              `,
-              fragmentShader: `
-                precision highp float;
-                uniform sampler2D map;
-                varying vec2 vUv;
-                void main() {
-                  vec4 c = texture2D(map, vUv);
-                  float mx = max(c.r, max(c.g, c.b));
-                  float lum = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
-                  float sig = max(mx, lum);
-                  float a = smoothstep(0.018, 0.095, sig) * c.a;
-                  if (a < 0.004) discard;
-                  gl_FragColor = vec4(c.rgb, a);
-                }
-              `,
-              transparent: true,
-              side: THREE.FrontSide,
-              depthWrite: false,
-            });
-            const mesh = new THREE.Mesh(geo, mat);
-            group.add(mesh);
-
-            fitCamera(wrap.clientWidth, wrap.clientHeight);
-          },
-          undefined,
-          function () {
-            var el = document.getElementById("crown-missing");
-            if (el) el.classList.add("is-visible");
+          // Remap UVs to only the mat sub-region of the PNG
+          const posA = faceGeo.attributes.position;
+          const uvA  = faceGeo.attributes.uv;
+          for (let i = 0; i < posA.count; i++) {
+            const nx = (posA.getX(i) + hw) / matW; // 0..1 across shape
+            const ny = (posA.getY(i) + hh) / matH; // 0..1 up shape
+            uvA.setXY(i,
+              uvL + nx * (uvR  - uvL),
+              uvVBot + ny * (uvVTop - uvVBot)
+            );
           }
-        );
+          uvA.needsUpdate = true;
+
+          const faceMesh = new THREE.Mesh(
+            faceGeo,
+            new THREE.MeshBasicMaterial({ map: texture })
+          );
+          faceMesh.position.z = depth / 2 + 0.005;
+
+          group.add(sideMesh);
+          group.add(faceMesh);
+        });
 
         function resize() {
           const rw = Math.max(1, wrap.clientWidth);
           const rh = Math.max(1, wrap.clientHeight);
           renderer.setSize(rw, rh, false);
-          if (group.children.length) fitCamera(rw, rh);
-          else {
-            camera.aspect = rw / rh;
-            camera.updateProjectionMatrix();
-          }
+          fitCamera(rw, rh);
         }
 
         function animate() {
@@ -186,6 +173,7 @@
             const elapsed = (performance.now() - t0) / 1000;
             const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
             group.position.y = yMid + yAmp * Math.cos(phase);
+            group.rotation.y += 0.022;
           } else {
             group.position.y = 0;
           }

@@ -74,8 +74,6 @@
         const yHi = 0.095;
         const yMid = (yLo + yHi) / 2;
         const yAmp = (yHi - yLo) / 2;
-        const yawBase = 0.1;
-        const yawSwing = 0.052;
         let t0 = performance.now();
 
         function fitCamera(rw, rh) {
@@ -153,10 +151,9 @@
             const elapsed = (performance.now() - t0) / 1000;
             const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
             group.position.y = yMid + yAmp * Math.cos(phase);
-            group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.58);
+            group.rotation.y += 0.022;
           } else {
             group.position.y = 0;
-            group.rotation.y = yawBase;
           }
           renderer.render(scene, camera);
         }

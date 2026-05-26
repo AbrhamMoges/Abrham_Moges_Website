@@ -295,7 +295,12 @@
       }
 
       .commissions-cube-row > .commissions-tile:first-child,
-      .commissions-cube-row > .commissions-tile:nth-child(2) {
+      .commissions-cube-row > .commissions-tile:nth-child(2),
+      .commissions-cube-row > .commissions-tile:nth-child(4),
+      .commissions-cube-row > .commissions-tile:nth-child(5),
+      .commissions-cube-row > .commissions-tile:nth-child(6),
+      .commissions-cube-row > .commissions-tile:nth-child(7),
+      .commissions-cube-row > .commissions-tile:nth-child(8) {
         cursor: pointer;
       }
 
@@ -565,6 +570,332 @@
         .park-popup-text-block { transition: none; }
       }
 
+      .bud-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(2rem, 5vw, 5rem);
+        padding: 2rem clamp(2rem, 6vw, 6rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .bud-popup-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+        max-height: 62vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 6px;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.4) transparent;
+      }
+
+      .bud-popup-left::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .bud-popup-left::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .bud-popup-left::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.4);
+        border-radius: 2px;
+      }
+
+      .bud-popup-3d-box {
+        width: min(680px, 62vmin);
+        height: min(680px, 62vmin);
+        flex: 0 0 auto;
+        transform: scale(0);
+        transform-origin: center center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1) 0.08s;
+        will-change: transform;
+        perspective: 900px;
+      }
+
+      .bud-popup-overlay.is-open .bud-popup-3d-box {
+        transform: scale(1);
+      }
+
+      .bud-popup-3d-box iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: none;
+      }
+
+      .bud-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .bud-popup-text-block {
+        width: clamp(280px, 38vw, 520px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+      }
+
+      .bud-popup-overlay.is-open .bud-popup-text-block {
+        opacity: 1;
+      }
+
+      .bud-popup-box {
+        width: clamp(280px, 38vw, 520px);
+        height: auto;
+        transform: scale(0);
+        transform-origin: center top;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1);
+        will-change: transform;
+      }
+
+      .bud-popup-overlay.is-open .bud-popup-box {
+        transform: scale(1);
+      }
+
+      .bud-popup-box video {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .bud-popup-overlay { transition: none; }
+        .bud-popup-box { transition: none; }
+        .bud-popup-text-block { transition: none; }
+      }
+
+      .cr-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(2rem, 5vw, 5rem);
+        padding: 2rem clamp(2rem, 6vw, 6rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .cr-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .cr-popup-3d-box {
+        width: min(680px, 62vmin);
+        height: min(680px, 62vmin);
+        flex: 0 0 auto;
+        transform: scale(0);
+        transform-origin: center center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1) 0.08s;
+        will-change: transform;
+        perspective: 900px;
+      }
+
+      .cr-popup-overlay.is-open .cr-popup-3d-box {
+        transform: scale(1);
+      }
+
+      .cr-popup-3d-box iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: none;
+      }
+
+      .cr-popup-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+        max-height: 62vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 6px;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.4) transparent;
+      }
+
+      .cr-popup-right::-webkit-scrollbar { width: 4px; }
+      .cr-popup-right::-webkit-scrollbar-track { background: transparent; }
+      .cr-popup-right::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 2px; }
+
+      .cr-popup-text-block {
+        width: clamp(280px, 38vw, 520px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+      }
+
+      .cr-popup-overlay.is-open .cr-popup-text-block {
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .cr-popup-overlay { transition: none; }
+        .cr-popup-3d-box { transition: none; }
+        .cr-popup-text-block { transition: none; }
+      }
+
+      /* ── Shared popup layout for heel / bash / yt / hxouse ── */
+      .heel-popup-overlay,
+      .bash-popup-overlay,
+      .yt-popup-overlay,
+      .hx-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9000;
+        -webkit-backdrop-filter: blur(18px) saturate(0.85);
+        backdrop-filter: blur(18px) saturate(0.85);
+        background: rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(2rem, 5vw, 5rem);
+        padding: 2rem clamp(2rem, 6vw, 6rem);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+
+      .heel-popup-overlay.is-open,
+      .bash-popup-overlay.is-open,
+      .yt-popup-overlay.is-open,
+      .hx-popup-overlay.is-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .heel-popup-3d-box,
+      .bash-popup-3d-box,
+      .yt-popup-3d-box,
+      .hx-popup-3d-box {
+        width: min(680px, 62vmin);
+        height: min(680px, 62vmin);
+        flex: 0 0 auto;
+        transform: scale(0);
+        transform-origin: center center;
+        transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1) 0.08s;
+        will-change: transform;
+        perspective: 900px;
+      }
+
+      .heel-popup-overlay.is-open .heel-popup-3d-box,
+      .bash-popup-overlay.is-open .bash-popup-3d-box,
+      .yt-popup-overlay.is-open   .yt-popup-3d-box,
+      .hx-popup-overlay.is-open   .hx-popup-3d-box {
+        transform: scale(1);
+      }
+
+      .heel-popup-3d-box iframe,
+      .bash-popup-3d-box iframe,
+      .yt-popup-3d-box   iframe,
+      .hx-popup-3d-box   iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: none;
+        pointer-events: none;
+      }
+
+      .heel-popup-right,
+      .bash-popup-right,
+      .yt-popup-right,
+      .hx-popup-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+        max-height: 62vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 6px;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.4) transparent;
+      }
+
+      .heel-popup-right::-webkit-scrollbar,
+      .bash-popup-right::-webkit-scrollbar,
+      .yt-popup-right::-webkit-scrollbar,
+      .hx-popup-right::-webkit-scrollbar { width: 4px; }
+
+      .heel-popup-right::-webkit-scrollbar-track,
+      .bash-popup-right::-webkit-scrollbar-track,
+      .yt-popup-right::-webkit-scrollbar-track,
+      .hx-popup-right::-webkit-scrollbar-track { background: transparent; }
+
+      .heel-popup-right::-webkit-scrollbar-thumb,
+      .bash-popup-right::-webkit-scrollbar-thumb,
+      .yt-popup-right::-webkit-scrollbar-thumb,
+      .hx-popup-right::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 2px; }
+
+      .heel-popup-text-block,
+      .bash-popup-text-block,
+      .yt-popup-text-block,
+      .hx-popup-text-block {
+        width: clamp(280px, 38vw, 520px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease 0.2s;
+        z-index: 1;
+      }
+
+      .heel-popup-overlay.is-open .heel-popup-text-block,
+      .bash-popup-overlay.is-open .bash-popup-text-block,
+      .yt-popup-overlay.is-open   .yt-popup-text-block,
+      .hx-popup-overlay.is-open   .hx-popup-text-block {
+        opacity: 1;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .heel-popup-overlay, .bash-popup-overlay,
+        .yt-popup-overlay,   .hx-popup-overlay   { transition: none; }
+        .heel-popup-3d-box,  .bash-popup-3d-box,
+        .yt-popup-3d-box,    .hx-popup-3d-box     { transition: none; }
+        .heel-popup-text-block, .bash-popup-text-block,
+        .yt-popup-text-block,   .hx-popup-text-block { transition: none; }
+      }
+
       /* ── Mobile: iPhone 13 Pro / Pro Max (390–428 px) ── */
       @media (max-width: 480px) {
 
@@ -617,12 +948,38 @@
 
         /* ── Popups: stack vertically, overlay itself doesn't scroll ── */
         .tr-popup-overlay,
-        .park-popup-overlay {
+        .park-popup-overlay,
+        .bud-popup-overlay,
+        .cr-popup-overlay,
+        .heel-popup-overlay,
+        .bash-popup-overlay,
+        .yt-popup-overlay,
+        .hx-popup-overlay {
           flex-direction: column;
           align-items: center;
           justify-content: flex-start;
           padding: 3rem 1rem 5.5rem;
           overflow: hidden;
+        }
+
+        .heel-popup-3d-box,
+        .bash-popup-3d-box,
+        .yt-popup-3d-box,
+        .hx-popup-3d-box {
+          width: min(78vw, 300px);
+          height: min(78vw, 300px);
+          transform-origin: center center;
+          flex-shrink: 0;
+        }
+
+        .heel-popup-text-block,
+        .bash-popup-text-block,
+        .yt-popup-text-block,
+        .hx-popup-text-block {
+          width: 92vw;
+          max-height: 40vh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
         .tr-popup-box {
@@ -910,6 +1267,217 @@
         </div>
       </div>
     </div>
+    <div class="bud-popup-overlay" id="bud-popup-overlay" aria-hidden="true">
+      <div class="bud-popup-3d-box">
+        <iframe
+          id="bud-popup-iframe"
+          title="Budweiser 3D — expanded"
+          src=""
+          loading="eager"
+        ></iframe>
+      </div>
+      <div class="bud-popup-left">
+        <div class="bud-popup-text-block">
+          <p class="tr-popup-title">Budweiser<br><span class="tr-popup-subtitle">3D Render</span></p>
+          <p class="tr-popup-desc">Developed a 3D visualizer concept for the launch of Budweiser Studio, focusing on creating a bold and immersive branded experience that aligned with the campaign's modern creative direction. In collaboration with a creative agency, I contributed to the visual development and presentation design process, helping translate the brand identity into an engaging digital showcase. The project emphasized strong visual storytelling, spatial composition, and branded motion-inspired aesthetics to support the rollout of Budweiser's new studio initiative.</p>
+        </div>
+        <div class="bud-popup-box" id="bud-popup-box">
+          <video autoplay muted loop playsinline>
+            <source src="../budweiser%20Render.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="bud-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="xbg3" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg3)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="bud-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg3" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg3)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="heel-popup-overlay" id="heel-popup-overlay" aria-hidden="true">
+      <div class="heel-popup-3d-box">
+        <iframe id="heel-popup-iframe" title="HEEL Leon Thomas Vinyl 3D — expanded" src="" loading="eager"></iframe>
+      </div>
+      <div class="heel-popup-right">
+        <div class="heel-popup-text-block">
+          <p class="tr-popup-title">HEEL<br><span class="tr-popup-subtitle">Leon Thomas</span></p>
+          <p class="tr-popup-desc">3D vinyl album artwork render for Leon Thomas' HEEL project — a commissioned design asset translating the cover art into a physical product mockup.</p>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="heel-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="xbg5" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg5)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="heel-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg5" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg5)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="bash-popup-overlay" id="bash-popup-overlay" aria-hidden="true">
+      <div class="bash-popup-3d-box">
+        <iframe id="bash-popup-iframe" title="Bash for the World 3D — expanded" src="" loading="eager"></iframe>
+      </div>
+      <div class="bash-popup-right">
+        <div class="bash-popup-text-block">
+          <p class="tr-popup-title">Bash for the World<br><span class="tr-popup-subtitle">Glyph Design</span></p>
+          <p class="tr-popup-desc">Custom glyph / logotype design for Bash for the World — a commissioned brand identity asset rendered in 3D.</p>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="bash-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="xbg6" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg6)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="bash-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg6" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg6)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="yt-popup-overlay" id="yt-popup-overlay" aria-hidden="true">
+      <div class="yt-popup-3d-box">
+        <iframe id="yt-popup-iframe" title="YouTube Gaming DreamCon 3D — expanded" src="" loading="eager"></iframe>
+      </div>
+      <div class="yt-popup-right">
+        <div class="yt-popup-text-block">
+          <p class="tr-popup-title">YouTube Gaming<br><span class="tr-popup-subtitle">DreamCon</span></p>
+          <p class="tr-popup-desc">3D logo render for YouTube Gaming's DreamCon activation — a commissioned design asset built for event branding and promotional use.</p>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="yt-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="xbg7" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg7)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="yt-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg7" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg7)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="hx-popup-overlay" id="hx-popup-overlay" aria-hidden="true">
+      <div class="hx-popup-3d-box">
+        <iframe id="hx-popup-iframe" title="HXOUSE Labs World Tour 3D — expanded" src="" loading="eager"></iframe>
+      </div>
+      <div class="hx-popup-right">
+        <div class="hx-popup-text-block">
+          <p class="tr-popup-title">HXOUSE Labs<br><span class="tr-popup-subtitle">World Tour</span></p>
+          <p class="tr-popup-desc">3D logo render for HXOUSE Labs World Tour — a commissioned design asset created for global tour branding and promotional materials.</p>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="hx-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="xbg8" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg8)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="hx-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg8" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg8)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
+    <div class="cr-popup-overlay" id="cr-popup-overlay" aria-hidden="true">
+      <div class="cr-popup-3d-box">
+        <iframe
+          id="cr-popup-iframe"
+          title="Crown Royal bar mat 3D — expanded"
+          src=""
+          loading="eager"
+        ></iframe>
+      </div>
+      <div class="cr-popup-right">
+        <div class="cr-popup-text-block">
+          <p class="tr-popup-title">Crown Royal<br><span class="tr-popup-subtitle">Bar Mat Design</span></p>
+          <p class="tr-popup-desc">Custom Crown Royal bar mat design — a branded promotional asset rendered in 3D.</p>
+        </div>
+      </div>
+      <div class="ps2-nav">
+        <div class="ps2-btn" id="cr-ps2-back-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs>
+              <radialGradient id="xbg4" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#3a3a4a"/>
+                <stop offset="100%" stop-color="#0d0d14"/>
+              </radialGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#xbg4)" stroke="#555" stroke-width="1.2"/>
+            <circle cx="16" cy="16" r="8" fill="none" stroke="#ff4c4c" stroke-width="3.2"/>
+          </svg>
+          Back
+        </div>
+        <div class="ps2-btn" id="cr-ps2-next-btn" style="cursor:pointer;">
+          <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
+            <defs><radialGradient id="obg4" cx="40%" cy="35%" r="60%"><stop offset="0%" stop-color="#3a3a4a"/><stop offset="100%" stop-color="#0d0d14"/></radialGradient></defs>
+            <circle cx="16" cy="16" r="15" fill="url(#obg4)" stroke="#555" stroke-width="1.2"/>
+            <line x1="9" y1="9" x2="23" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+            <line x1="23" y1="9" x2="9" y2="23" stroke="#7b9fff" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          Next
+        </div>
+      </div>
+    </div>
+
     <script>
       (function () {
         var body = document.body;
@@ -1152,6 +1720,189 @@
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape") closePopup();
         });
+      })();
+
+      (function () {
+        var thirdTile = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(3)");
+        var overlay = document.getElementById("bud-popup-overlay");
+        var video = overlay ? overlay.querySelector("video") : null;
+        var budIframe = document.getElementById("bud-popup-iframe");
+        var budIframeSrc = "../budweiser_3d_clean.html?t=" + Date.now();
+        var backBtn = document.getElementById("bud-ps2-back-btn");
+
+        if (!thirdTile || !overlay) return;
+
+        function openPopup() {
+          if (budIframe && (!budIframe.src || budIframe.src === window.location.href)) {
+            budIframe.src = budIframeSrc;
+          }
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+          if (video) video.play();
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+          if (video) video.pause();
+          if (budIframe) budIframe.src = "";
+        }
+
+        var budTapped = false;
+        thirdTile.addEventListener("touchend", function (e) {
+          budTapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { budTapped = false; }, 600);
+        });
+        thirdTile.addEventListener("click", function () {
+          if (!budTapped) openPopup();
+        });
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest("#bud-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
+        });
+
+        if (backBtn) backBtn.addEventListener("click", closePopup);
+
+        var budNextBtn = document.getElementById("bud-ps2-next-btn");
+        if (budNextBtn) budNextBtn.addEventListener("click", function () {
+          closePopup();
+          setTimeout(function () {
+            var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(4)");
+            if (t) t.click();
+          }, 350);
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
+        });
+      })();
+
+      (function () {
+        var fourthTile = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(4)");
+        var overlay = document.getElementById("cr-popup-overlay");
+        var crIframe = document.getElementById("cr-popup-iframe");
+        var crIframeSrc = "../crown_royal_mat_3d.html?t=" + Date.now();
+        var backBtn = document.getElementById("cr-ps2-back-btn");
+
+        if (!fourthTile || !overlay) return;
+
+        function openPopup() {
+          if (crIframe && (!crIframe.src || crIframe.src === window.location.href)) {
+            crIframe.src = crIframeSrc;
+          }
+          overlay.classList.add("is-open");
+          overlay.setAttribute("aria-hidden", "false");
+        }
+
+        function closePopup() {
+          overlay.classList.remove("is-open");
+          overlay.setAttribute("aria-hidden", "true");
+          if (crIframe) crIframe.src = "";
+        }
+
+        var crTapped = false;
+        fourthTile.addEventListener("touchend", function (e) {
+          crTapped = true;
+          e.preventDefault();
+          openPopup();
+          setTimeout(function () { crTapped = false; }, 600);
+        });
+        fourthTile.addEventListener("click", function () {
+          if (!crTapped) openPopup();
+        });
+
+        overlay.addEventListener("click", function (e) {
+          if (!e.target.closest(".cr-popup-3d-box") && !e.target.closest(".ps2-nav")) closePopup();
+        });
+
+        if (backBtn) backBtn.addEventListener("click", closePopup);
+        var crNextBtn = document.getElementById("cr-ps2-next-btn");
+        if (crNextBtn) crNextBtn.addEventListener("click", function () {
+          closePopup();
+          setTimeout(function () { var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(5)"); if (t) t.click(); }, 350);
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closePopup();
+        });
+      })();
+
+      (function () {
+        var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(5)");
+        var overlay = document.getElementById("heel-popup-overlay");
+        var iframe  = document.getElementById("heel-popup-iframe");
+        var src     = "../Heel_Leon_Thomas_Vinyl.html?t=" + Date.now() + "&popup=1";
+        var backBtn = document.getElementById("heel-ps2-back-btn");
+        if (!tile || !overlay) return;
+        function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
+        function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
+        var tapped = false;
+        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
+        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        overlay.addEventListener("click", function(e){ if(!e.target.closest(".heel-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
+        if (backBtn) backBtn.addEventListener("click", close);
+        var heelNext = document.getElementById("heel-ps2-next-btn");
+        if (heelNext) heelNext.addEventListener("click", function () { close(); setTimeout(function () { var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(6)"); if (t) t.click(); }, 350); });
+        document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
+      })();
+
+      (function () {
+        var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(6)");
+        var overlay = document.getElementById("bash-popup-overlay");
+        var iframe  = document.getElementById("bash-popup-iframe");
+        var src     = "../bash_for_the_world.html?t=" + Date.now();
+        var backBtn = document.getElementById("bash-ps2-back-btn");
+        if (!tile || !overlay) return;
+        function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
+        function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
+        var tapped = false;
+        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
+        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        overlay.addEventListener("click", function(e){ if(!e.target.closest(".bash-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
+        if (backBtn) backBtn.addEventListener("click", close);
+        var bashNext = document.getElementById("bash-ps2-next-btn");
+        if (bashNext) bashNext.addEventListener("click", function () { close(); setTimeout(function () { var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(7)"); if (t) t.click(); }, 350); });
+        document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
+      })();
+
+      (function () {
+        var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(7)");
+        var overlay = document.getElementById("yt-popup-overlay");
+        var iframe  = document.getElementById("yt-popup-iframe");
+        var src     = "../youtube_dreamcon_3d.html?t=" + Date.now();
+        var backBtn = document.getElementById("yt-ps2-back-btn");
+        if (!tile || !overlay) return;
+        function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
+        function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
+        var tapped = false;
+        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
+        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        overlay.addEventListener("click", function(e){ if(!e.target.closest(".yt-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
+        if (backBtn) backBtn.addEventListener("click", close);
+        var ytNext = document.getElementById("yt-ps2-next-btn");
+        if (ytNext) ytNext.addEventListener("click", function () { close(); setTimeout(function () { var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(8)"); if (t) t.click(); }, 350); });
+        document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
+      })();
+
+      (function () {
+        var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(8)");
+        var overlay = document.getElementById("hx-popup-overlay");
+        var iframe  = document.getElementById("hx-popup-iframe");
+        var src     = "../hxouse_labs_tour_3d.html?t=" + Date.now();
+        var backBtn = document.getElementById("hx-ps2-back-btn");
+        if (!tile || !overlay) return;
+        function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
+        function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
+        var tapped = false;
+        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
+        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        overlay.addEventListener("click", function(e){ if(!e.target.closest(".hx-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
+        if (backBtn) backBtn.addEventListener("click", close);
+        var hxNext = document.getElementById("hx-ps2-next-btn");
+        if (hxNext) hxNext.addEventListener("click", function () { close(); setTimeout(function () { var t = document.querySelector(".commissions-cube-row > .commissions-tile:first-child"); if (t) t.click(); }, 350); });
+        document.addEventListener("keydown", function(e){ if(e.key==="Escape") close(); });
       })();
     </script>
   </body>
