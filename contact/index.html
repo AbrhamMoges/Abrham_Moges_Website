@@ -32,9 +32,14 @@
         background: transparent;
       }
 
+      @keyframes contact-date-active {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.55; }
+      }
+
       /* ── Corner labels ── */
       .contact-corner-title,
-      .contact-corner-back {
+      .contact-corner-date {
         position: fixed;
         top: clamp(1.5rem, 4.2vh, 2.8rem);
         margin: 0;
@@ -54,16 +59,10 @@
         color: #c8ca47;
       }
 
-      .contact-corner-back {
+      .contact-corner-date {
         left: clamp(0.9rem, 2.4vw, 1.8rem);
         color: #f5f5f5;
-        text-decoration: none;
-      }
-
-      .contact-corner-back:hover { opacity: 0.9; }
-      .contact-corner-back:focus-visible {
-        outline: 1px solid #fff;
-        outline-offset: 4px;
+        animation: contact-date-active 2.2s ease-in-out infinite;
       }
 
       /* ── Main card ── */
@@ -151,7 +150,7 @@
       /* ── Glass cube canvas ── */
       #glcanvas {
         position: fixed !important;
-        top: 20% !important;
+        top: 30% !important;
         left: 33% !important;
         transform: translate(-50%, 0) !important;
         width: 28vmin !important;
@@ -163,8 +162,8 @@
       /* ── Glass cube 2 canvas ── */
       #glcanvas2 {
         position: fixed !important;
-        top: 45% !important;
-        left: 16% !important;
+        top: 48% !important;
+        left: 18% !important;
         transform: translate(-50%, -50%) !important;
         width: 28vmin !important;
         height: 28vmin !important;
@@ -175,8 +174,8 @@
       /* ── Glass cube 3 canvas ── */
       #glcanvas3 {
         position: fixed !important;
-        top: 65% !important;
-        left: 38% !important;
+        top: 60% !important;
+        left: 31% !important;
         transform: translate(-50%, -50%) !important;
         width: 28vmin !important;
         height: 28vmin !important;
@@ -187,7 +186,7 @@
       /* ── Glass cube 4 canvas ── */
       #glcanvas4 {
         position: fixed !important;
-        top: 86% !important;
+        top: 70% !important;
         left: 22% !important;
         transform: translate(-50%, -50%) !important;
         width: 28vmin !important;
@@ -199,8 +198,8 @@
       /* ── Glass cube 5 canvas ── */
       #glcanvas5 {
         position: fixed !important;
-        top: 22% !important;
-        left: 22% !important;
+        top: 30% !important;
+        left: 23% !important;
         transform: translate(-50%, -50%) !important;
         width: 28vmin !important;
         height: 28vmin !important;
@@ -285,14 +284,37 @@
 
       .contact-nav:has(a:focus-visible) { filter: none; }
 
-      /* ── PS2 mobile nav ── */
+      .contact-ps2-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: Calibri, "Segoe UI", Arial, sans-serif;
+        font-size: 15px;
+        font-weight: normal;
+        color: #fff;
+        text-decoration: none;
+        text-shadow:
+          -1px 0 #000, 1px 0 #000,
+          0 -1px #000, 0 1px #000,
+          -1px -1px #000, 1px -1px #000,
+          -1px 1px #000, 1px 1px #000;
+      }
+
+      /* ── PS2 bottom nav ── */
       .contact-ps2-nav {
-        display: none;
+        display: flex;
+        position: fixed;
+        bottom: clamp(1.5rem, 4vh, 2.5rem);
+        left: 50%;
+        transform: translateX(-50%);
+        align-items: center;
+        gap: 1.6rem;
+        z-index: 9999;
       }
 
       @media (max-width: 780px) {
         .contact-corner-title,
-        .contact-corner-back {
+        .contact-corner-date {
           font-size: clamp(16px, 5vw, 22px);
         }
 
@@ -354,10 +376,6 @@
           height: 130vmin;
         }
 
-        .contact-corner-back {
-          display: none;
-        }
-
         .contact-nav {
           left: auto;
           right: 22vw;
@@ -369,31 +387,9 @@
         }
 
         .contact-ps2-nav {
-          display: flex;
-          position: fixed;
-          bottom: 10vh;
-          left: 50%;
-          transform: translateX(-50%);
-          align-items: center;
-          gap: 1.6rem;
-          z-index: 9999;
+          bottom: 14vh;
         }
 
-        .contact-ps2-btn {
-          display: flex;
-          align-items: center;
-          gap: 0.45rem;
-          font-family: Calibri, "Segoe UI", Arial, sans-serif;
-          font-size: 15px;
-          font-weight: normal;
-          color: #fff;
-          text-decoration: none;
-          text-shadow:
-            -1px 0 #000, 1px 0 #000,
-            0 -1px #000, 0 1px #000,
-            -1px -1px #000, 1px -1px #000,
-            -1px 1px #000, 1px 1px #000;
-        }
 
         #glcanvas  { width: 32vmin !important; height: 32vmin !important; top: 35% !important; }
         #glcanvas2 { width: 32vmin !important; height: 32vmin !important; top: 46% !important; }
@@ -416,7 +412,7 @@
     <div class="contact-blue-haze" aria-hidden="true"></div>
     <canvas id="contact-particles" aria-hidden="true"></canvas>
 
-    <a class="contact-corner-back" href="../home/">Back</a>
+    <p class="contact-corner-date">2026/26/05</p>
     <p class="contact-corner-title">Contact Me</p>
 
     <model-viewer

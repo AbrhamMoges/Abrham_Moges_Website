@@ -337,7 +337,7 @@
       .tr-popup-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9000;
+        z-index: 9999;
         -webkit-backdrop-filter: blur(18px) saturate(0.85);
         backdrop-filter: blur(18px) saturate(0.85);
         background: rgba(0, 0, 0, 0.06);
@@ -454,7 +454,7 @@
       .park-popup-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9000;
+        z-index: 9999;
         -webkit-backdrop-filter: blur(18px) saturate(0.85);
         backdrop-filter: blur(18px) saturate(0.85);
         background: rgba(0, 0, 0, 0.06);
@@ -527,7 +527,11 @@
         border-radius: 2px;
       }
 
-      .park-popup-images {
+      .park-popup-images,
+      .heel-popup-images,
+      .yt-popup-media,
+      .cr-popup-media,
+      .hx-popup-media {
         display: flex;
         flex-direction: column;
         gap: 0.8rem;
@@ -535,7 +539,18 @@
         width: 100%;
       }
 
-      .park-popup-images img {
+      .park-popup-images img,
+      .heel-popup-images img,
+      .yt-popup-media img,
+      .cr-popup-media img {
+        width: 100%;
+        border-radius: 4px;
+        display: block;
+      }
+
+      .yt-popup-media video,
+      .cr-popup-media video,
+      .hx-popup-media video {
         width: 100%;
         border-radius: 4px;
         display: block;
@@ -573,7 +588,7 @@
       .bud-popup-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9000;
+        z-index: 9999;
         -webkit-backdrop-filter: blur(18px) saturate(0.85);
         backdrop-filter: blur(18px) saturate(0.85);
         background: rgba(0, 0, 0, 0.06);
@@ -688,7 +703,7 @@
       .cr-popup-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9000;
+        z-index: 9999;
         -webkit-backdrop-filter: blur(18px) saturate(0.85);
         backdrop-filter: blur(18px) saturate(0.85);
         background: rgba(0, 0, 0, 0.06);
@@ -778,7 +793,7 @@
       .hx-popup-overlay {
         position: fixed;
         inset: 0;
-        z-index: 9000;
+        z-index: 9999;
         -webkit-backdrop-filter: blur(18px) saturate(0.85);
         backdrop-filter: blur(18px) saturate(0.85);
         background: rgba(0, 0, 0, 0.06);
@@ -1319,8 +1334,13 @@
       </div>
       <div class="heel-popup-right">
         <div class="heel-popup-text-block">
-          <p class="tr-popup-title">HEEL<br><span class="tr-popup-subtitle">Leon Thomas</span></p>
-          <p class="tr-popup-desc">3D vinyl album artwork render for Leon Thomas' HEEL project — a commissioned design asset translating the cover art into a physical product mockup.</p>
+          <p class="tr-popup-title">Leon Thomas<br><span class="tr-popup-subtitle">HEEL Vinyl Packaging Design</span></p>
+          <p class="tr-popup-desc">Designed the print-ready vinyl packaging and layout files for Leon Thomas' HEEL album release using Adobe InDesign. Created production assets for label distribution and coordinated the visual formatting required for vinyl manufacturing, ensuring the artwork translated accurately into physical packaging. The project focused on maintaining the integrity of the album's creative direction while preparing professional deliverables for large-scale production and distribution.</p>
+        </div>
+        <div class="heel-popup-images">
+          <img src="../PNG image.png" alt="HEEL vinyl front mockup" />
+          <img src="../Heel Vinyl Indesgin 2.jpg" alt="HEEL vinyl packaging design sheet" />
+          <img src="../Heel Vinyl Png.jpg" alt="HEEL vinyl label Side C" />
         </div>
       </div>
       <div class="ps2-nav">
@@ -1350,8 +1370,8 @@
       </div>
       <div class="bash-popup-right">
         <div class="bash-popup-text-block">
-          <p class="tr-popup-title">Bash for the World<br><span class="tr-popup-subtitle">Glyph Design</span></p>
-          <p class="tr-popup-desc">Custom glyph / logotype design for Bash for the World — a commissioned brand identity asset rendered in 3D.</p>
+          <p class="tr-popup-title">Bash for the World<br><span class="tr-popup-subtitle">Shopify Merch Website Design</span></p>
+          <p class="tr-popup-desc">Designed a custom glyph and visual identity asset for Bash for the World, later extending the branding into merchandise and Shopify storefront design. Developed a cohesive visual direction across digital and retail touchpoints, focusing on bold graphic language, brand consistency, and an immersive shopping experience. The project combined logo development, 3D-rendered brand assets, and e-commerce design to help strengthen the brand's online presence and merch rollout.</p>
         </div>
       </div>
       <div class="ps2-nav">
@@ -1384,6 +1404,10 @@
           <p class="tr-popup-title">YouTube Gaming<br><span class="tr-popup-subtitle">DreamCon</span></p>
           <p class="tr-popup-desc">3D logo render for YouTube Gaming's DreamCon activation — a commissioned design asset built for event branding and promotional use.</p>
         </div>
+        <div class="yt-popup-media">
+          <video src="dreamcon-visualizer.mov" autoplay loop muted playsinline></video>
+          <img src="the-dreamers-lounge.jpg" alt="The Dreamers Lounge" />
+        </div>
       </div>
       <div class="ps2-nav">
         <div class="ps2-btn" id="yt-ps2-back-btn" style="cursor:pointer;">
@@ -1412,8 +1436,13 @@
       </div>
       <div class="hx-popup-right">
         <div class="hx-popup-text-block">
-          <p class="tr-popup-title">HXOUSE Labs<br><span class="tr-popup-subtitle">World Tour</span></p>
-          <p class="tr-popup-desc">3D logo render for HXOUSE Labs World Tour — a commissioned design asset created for global tour branding and promotional materials.</p>
+          <p class="tr-popup-title">HXOUSE Labs World Tour<br><span class="tr-popup-subtitle">San Francisco x The Weeknd</span></p>
+          <p class="tr-popup-desc">Hand-selected to participate in the HXOUSE Labs World Tour in San Francisco, an elite creative technology initiative created in collaboration with The Weeknd and the XO creative team. Chosen among a highly curated group of emerging designers, technologists, and immersive creatives, the experience centered around innovation, collaboration, and the future of digital culture.</p>
+          <p class="tr-popup-desc">As part of the intensive design challenge, I developed a custom 3D visual branding asset for the HXOUSE Labs World Tour, drawing inspiration from the futuristic aesthetic and cinematic atmosphere surrounding The After Hours Til Dawn era. The work combined bold visual storytelling, experimental branding, and immersive presentation design to create a polished promotional piece aligned with the event's high-profile creative direction.</p>
+          <p class="tr-popup-desc">The program provided a rare opportunity to collaborate within a fast-paced creative environment alongside artists, designers, engineers, and strategists, while contributing to concepts tied to one of the most influential global music and visual brands of the decade. This experience strengthened my approach to experiential design, 3D visualization, and culturally driven creative storytelling.</p>
+        </div>
+        <div class="hx-popup-media">
+          <video src="hxouse-nft.mp4" autoplay loop muted playsinline></video>
         </div>
       </div>
       <div class="ps2-nav">
@@ -1448,8 +1477,13 @@
       </div>
       <div class="cr-popup-right">
         <div class="cr-popup-text-block">
-          <p class="tr-popup-title">Crown Royal<br><span class="tr-popup-subtitle">Bar Mat Design</span></p>
-          <p class="tr-popup-desc">Custom Crown Royal bar mat design — a branded promotional asset rendered in 3D.</p>
+          <p class="tr-popup-title">Crown Royal Marquis<br><span class="tr-popup-subtitle">Atlanta Launch Activation</span></p>
+          <p class="tr-popup-desc">Developed a premium 3D motion visual and branded promotional asset for Crown Royal's highly anticipated Marquis drink activation in Atlanta, GA. Inspired by the campaign's elevated luxury direction, the piece was designed to capture the sophistication and energy of the launch while translating the official brand identity into an immersive visual experience. Utilizing Crown Royal's signature purple-and-gold palette, cinematic lighting, and high-end presentation styling, the project served as a standout activation asset created to enhance audience engagement and reinforce the exclusivity of the Marquis rollout.</p>
+        </div>
+        <div class="cr-popup-media">
+          <video src="crown-royal-marquis.mov" autoplay loop muted playsinline></video>
+          <img src="crown-royal-brand-guide.jpg" alt="Crown Royal Marquis brand style guide" />
+          <img src="crown-royal-brand-guide-2.jpg" alt="Crown Royal Marquis brand style guide 2" />
         </div>
       </div>
       <div class="ps2-nav">
