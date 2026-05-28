@@ -59,28 +59,6 @@ function makeGlassCube(canvasId, boxSize, rotX, rotY) {
   cube.scale.setScalar(0);
   var startTime = performance.now();
 
-  [
-    { opacity: 0.025, angle: 0 }, { opacity: 0.035, angle: 30 },
-    { opacity: 0.020, angle: 60 }, { opacity: 0.030, angle: 90 },
-    { opacity: 0.025, angle: 120 }, { opacity: 0.020, angle: 150 }
-  ].forEach(function (d) {
-    var shaft = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 7.0),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true,
-        opacity: d.opacity, side: THREE.DoubleSide, depthWrite: false,
-        blending: THREE.AdditiveBlending }));
-    shaft.rotation.z = d.angle * Math.PI / 180;
-    scene.add(shaft);
-  });
-
-  [45, 135].forEach(function (deg) {
-    var halo = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 7.0),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true,
-        opacity: 0.01, side: THREE.DoubleSide, depthWrite: false,
-        blending: THREE.AdditiveBlending }));
-    halo.rotation.z = deg * Math.PI / 180;
-    scene.add(halo);
-  });
-
   function resize() {
     var w = canvas.offsetWidth || canvas.clientWidth || 300;
     var h = canvas.offsetHeight || canvas.clientHeight || 300;
