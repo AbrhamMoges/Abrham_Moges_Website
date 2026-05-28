@@ -136,7 +136,7 @@
 
       body.graphics-intro-on .graphics-tile:nth-child(2) .graphics-tile-pop {
         animation: graphics-intro-scale calc(var(--graphics-intro-pop-ms) * 1ms)
-          var(--graphics-intro-ease) 80ms both;
+          var(--graphics-intro-ease) calc(var(--graphics-intro-pop-ms) * 1ms) both;
       }
 
       body.graphics-intro-on.graphics-intro-finished
@@ -483,7 +483,7 @@
           window.clearTimeout(graphicsIntroFinishTimer);
           graphicsIntroFinishTimer = window.setTimeout(function () {
             body.classList.add("graphics-intro-finished");
-          }, introPopMs * 1 + 80 + 32);
+          }, introPopMs * 2 + 32);
         }
 
         function startGraphicsIntro() {
