@@ -193,9 +193,13 @@
       const reduced =
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isPopup = typeof URLSearchParams !== "undefined" &&
+        new URLSearchParams(window.location.search).has("popup");
       const HOVER_PERIOD_S = 3.2;
       const yAmp = 0.125;
       const yMid = 0;
+      const yawBase = 0.52;
+      const yawSwing = 0.055;
       let t0 = performance.now();
 
       function resize() {
@@ -214,9 +218,14 @@
           const elapsed = (performance.now() - t0) / 1000;
           const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
           group.position.y = yMid + yAmp * Math.cos(phase);
-          group.rotation.y += 0.022;
+          if (isPopup) {
+            group.rotation.y += 0.022;
+          } else {
+            group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.6);
+          }
         } else {
           group.position.y = 0;
+          if (!isPopup) group.rotation.y = yawBase;
         }
         renderer.render(scene, camera);
       }

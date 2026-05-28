@@ -961,7 +961,7 @@
           pointer-events: none;
         }
 
-        /* ── Popups: stack vertically, overlay itself doesn't scroll ── */
+        /* ── Popups: stack vertically ── */
         .tr-popup-overlay,
         .park-popup-overlay,
         .bud-popup-overlay,
@@ -974,17 +974,30 @@
           align-items: center;
           justify-content: flex-start;
           padding: 3rem 1rem 5.5rem;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: hidden;
         }
 
         .heel-popup-3d-box,
         .bash-popup-3d-box,
         .yt-popup-3d-box,
         .hx-popup-3d-box {
-          width: min(78vw, 300px);
-          height: min(78vw, 300px);
+          width: min(44vw, 160px);
+          height: min(44vw, 160px);
           transform-origin: center center;
           flex-shrink: 0;
+        }
+
+        .heel-popup-right,
+        .bash-popup-right,
+        .yt-popup-right,
+        .hx-popup-right {
+          flex: 1 1 auto;
+          min-height: 0;
+          width: 92vw;
+          max-height: none;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
         .heel-popup-text-block,
@@ -992,9 +1005,7 @@
         .yt-popup-text-block,
         .hx-popup-text-block {
           width: 92vw;
-          max-height: 40vh;
-          overflow-y: auto;
-          -webkit-overflow-scrolling: touch;
+          max-height: none;
         }
 
         .tr-popup-box {
@@ -1761,7 +1772,7 @@
         var overlay = document.getElementById("bud-popup-overlay");
         var video = overlay ? overlay.querySelector("video") : null;
         var budIframe = document.getElementById("bud-popup-iframe");
-        var budIframeSrc = "../budweiser_3d_clean.html?t=" + Date.now();
+        var budIframeSrc = "../budweiser_3d_clean.html?popup=1&t=" + Date.now();
         var backBtn = document.getElementById("bud-ps2-back-btn");
 
         if (!thirdTile || !overlay) return;
@@ -1817,7 +1828,7 @@
         var fourthTile = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(4)");
         var overlay = document.getElementById("cr-popup-overlay");
         var crIframe = document.getElementById("cr-popup-iframe");
-        var crIframeSrc = "../crown_royal_mat_3d.html?t=" + Date.now();
+        var crIframeSrc = "../crown_royal_mat_3d.html?popup=1&t=" + Date.now();
         var backBtn = document.getElementById("cr-ps2-back-btn");
 
         if (!fourthTile || !overlay) return;
@@ -1886,7 +1897,7 @@
         var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(6)");
         var overlay = document.getElementById("bash-popup-overlay");
         var iframe  = document.getElementById("bash-popup-iframe");
-        var src     = "../bash_for_the_world.html?t=" + Date.now();
+        var src     = "../bash_for_the_world.html?popup=1&t=" + Date.now();
         var backBtn = document.getElementById("bash-ps2-back-btn");
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
@@ -1905,7 +1916,7 @@
         var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(7)");
         var overlay = document.getElementById("yt-popup-overlay");
         var iframe  = document.getElementById("yt-popup-iframe");
-        var src     = "../youtube_dreamcon_3d.html?t=" + Date.now();
+        var src     = "../youtube_dreamcon_3d.html?popup=1&t=" + Date.now();
         var backBtn = document.getElementById("yt-ps2-back-btn");
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
@@ -1924,7 +1935,7 @@
         var tile    = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(8)");
         var overlay = document.getElementById("hx-popup-overlay");
         var iframe  = document.getElementById("hx-popup-iframe");
-        var src     = "../hxouse_labs_tour_3d.html?t=" + Date.now();
+        var src     = "../hxouse_labs_tour_3d.html?popup=1&t=" + Date.now();
         var backBtn = document.getElementById("hx-ps2-back-btn");
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
