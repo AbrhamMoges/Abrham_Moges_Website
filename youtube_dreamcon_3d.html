@@ -151,10 +151,11 @@
             }
 
             const frontMat = makeCoverShader(texture);
-            const sideColor = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
-            const rimTop    = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.10 });
-            const rimBot    = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.06 });
-            const backMat   = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.04 });
+            const invisible = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, visible: false });
+            const sideColor = invisible;
+            const rimTop    = invisible;
+            const rimBot    = invisible;
+            const backMat   = invisible;
 
             const geo  = new THREE.BoxGeometry(boxW, boxH, depth);
             const mats = [sideColor, sideColor, rimTop, rimBot, frontMat, backMat];
