@@ -166,12 +166,13 @@
 
             const frontMat = makeCoverShader(texture);
             const invisible = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, visible: false });
-            const sideColor = invisible;
-            const rimTop    = invisible;
-            const rimBot    = invisible;
-            const backMat   = invisible;
+            const dark = isPopup ? new THREE.MeshBasicMaterial({ color: 0x111111 }) : invisible;
+            const sideColor = dark;
+            const rimTop    = dark;
+            const rimBot    = dark;
+            const backMat   = dark;
 
-            const geo = new THREE.BoxGeometry(boxW, boxH, depth);
+            const geo = new THREE.BoxGeometry(boxW, boxH, isPopup ? 0.7 : depth);
             const mats = [
               sideColor,
               sideColor,
