@@ -83,16 +83,11 @@
           typeof window.matchMedia === "function" &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        const isPopup = typeof URLSearchParams !== "undefined" &&
-          new URLSearchParams(window.location.search).has("popup");
-
         const HOVER_PERIOD_S = 3.35;
         const yLo = -0.065;
         const yHi = 0.098;
         const yMid = (yLo + yHi) / 2;
         const yAmp = (yHi - yLo) / 2;
-        const yawBase = 0.11;
-        const yawSwing = 0.055;
         let t0 = performance.now();
 
         function fitCamera(rw, rh) {
@@ -166,11 +161,10 @@
             }
 
             const frontMat = makeCoverShader(texture);
-            const invisible = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, visible: false });
-            const sideColor = invisible;
-            const rimTop    = invisible;
-            const rimBot    = invisible;
-            const backMat   = invisible;
+            const sideColor = new THREE.MeshBasicMaterial({ color: 0x1a1a1a });
+            const rimTop    = new THREE.MeshBasicMaterial({ color: 0x2a2a2a });
+            const rimBot    = new THREE.MeshBasicMaterial({ color: 0x0d0d0d });
+            const backMat   = new THREE.MeshBasicMaterial({ color: 0x080808 });
 
             const geo = new THREE.BoxGeometry(boxW, boxH, depth);
             const mats = [
@@ -211,14 +205,9 @@
             const elapsed = (performance.now() - t0) / 1000;
             const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
             group.position.y = yMid + yAmp * Math.cos(phase);
-            if (isPopup) {
-              group.rotation.y += 0.022;
-            } else {
-              group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.6);
-            }
+            group.rotation.y += 0.022;
           } else {
             group.position.y = 0;
-            if (!isPopup) group.rotation.y = yawBase;
           }
           renderer.render(scene, camera);
         }
