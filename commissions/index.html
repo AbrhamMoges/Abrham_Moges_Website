@@ -1219,7 +1219,7 @@
           </svg>
           Back
         </div>
-        <div class="ps2-btn">
+        <div class="ps2-btn" id="tr-ps2-next-btn" style="cursor:pointer;">
           <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
             <defs>
               <radialGradient id="obg" cx="40%" cy="35%" r="60%">
@@ -1277,7 +1277,7 @@
           </svg>
           Back
         </div>
-        <div class="ps2-btn">
+        <div class="ps2-btn" id="park-ps2-next-btn" style="cursor:pointer;">
           <svg width="52" height="52" viewBox="0 0 32 32" aria-hidden="true">
             <defs>
               <radialGradient id="obg2" cx="40%" cy="35%" r="60%">
@@ -1718,6 +1718,15 @@
         var backBtn = document.getElementById("ps2-back-btn");
         if (backBtn) backBtn.addEventListener("click", closePopup);
 
+        var trNextBtn = document.getElementById("tr-ps2-next-btn");
+        if (trNextBtn) trNextBtn.addEventListener("click", function () {
+          closePopup();
+          setTimeout(function () {
+            var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(2)");
+            if (t) t.click();
+          }, 350);
+        });
+
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape") closePopup();
         });
@@ -1761,6 +1770,15 @@
 
         var backBtn = document.getElementById("park-ps2-back-btn");
         if (backBtn) backBtn.addEventListener("click", closePopup);
+
+        var parkNextBtn = document.getElementById("park-ps2-next-btn");
+        if (parkNextBtn) parkNextBtn.addEventListener("click", function () {
+          closePopup();
+          setTimeout(function () {
+            var t = document.querySelector(".commissions-cube-row > .commissions-tile:nth-child(3)");
+            if (t) t.click();
+          }, 350);
+        });
 
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape") closePopup();
