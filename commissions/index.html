@@ -382,7 +382,8 @@
         left: 45%;
         width: clamp(280px, 38vw, 520px);
         max-height: 70vh;
-        overflow: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -390,6 +391,27 @@
         opacity: 0;
         transition: opacity 0.3s ease 0.2s;
         z-index: 1;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.3) transparent;
+      }
+      .tr-popup-text-block::-webkit-scrollbar { width: 4px; }
+      .tr-popup-text-block::-webkit-scrollbar-track { background: transparent; }
+      .tr-popup-text-block::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px; }
+
+      .tr-event-photos {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+        margin-top: 1.4rem;
+        padding-bottom: 0.5rem;
+      }
+      .tr-event-photos img {
+        width: 100%;
+        aspect-ratio: 640 / 434;
+        object-fit: cover;
+        border-radius: 4px;
+        display: block;
       }
 
       .tr-popup-overlay.is-open .tr-popup-text-block {
@@ -1196,6 +1218,18 @@
       <div class="tr-popup-text-block">
         <p class="tr-popup-title">Coyote Experimental Event Design<br><span class="tr-popup-subtitle">For Tommy Richman</span><br><span class="tr-popup-subtitle">09/30/2024</span></p>
         <p class="tr-popup-desc">As an experiential designer at a Agency, I had the opportunity to contribute to the Tommy Richman Coyote album release party — an immersive event experience brought to life through intentional design and spatial storytelling. I was responsible for developing detailed 3D models using SketchUp, translating creative concepts into visual blueprints that guided the overall production and layout of the event. This project challenged me to think beyond traditional design boundaries, merging artistic vision with technical precision to help craft an unforgettable environment for the audience.</p>
+        <div class="tr-event-photos">
+          <img src="tommy-event/1.jpg" alt="Tommy Richman event photo 1" loading="lazy" />
+          <img src="tommy-event/2.jpg" alt="Tommy Richman event photo 2" loading="lazy" />
+          <img src="tommy-event/3.jpg" alt="Tommy Richman event photo 3" loading="lazy" />
+          <img src="tommy-event/4.jpg" alt="Tommy Richman event photo 4" loading="lazy" />
+          <img src="tommy-event/5.jpg" alt="Tommy Richman event photo 5" loading="lazy" />
+          <img src="tommy-event/6.jpg" alt="Tommy Richman event photo 6" loading="lazy" />
+          <img src="tommy-event/7.jpg" alt="Tommy Richman event photo 7" loading="lazy" />
+          <img src="tommy-event/8.jpg" alt="Tommy Richman event photo 8" loading="lazy" />
+          <img src="tommy-event/9.jpg" alt="Tommy Richman event photo 9" loading="lazy" />
+          <img src="tommy-event/10.jpg" alt="Tommy Richman event photo 10" loading="lazy" />
+        </div>
       </div>
       <div class="tr-popup-box" id="tr-popup-box">
         <iframe
