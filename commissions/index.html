@@ -235,6 +235,12 @@
         pointer-events: none;
       }
 
+      /* HXOUSE tile: portrait iframe so the lanyard isn't clipped */
+      .commissions-hxouse-iframe {
+        height: 140% !important;
+        transform: translateY(-14.3%) !important;
+      }
+
       /* Keep tiles fully visible (no parent opacity animation) so nested iframes paint reliably. */
       .commissions-cube-row > .commissions-tile {
         opacity: 1;
@@ -848,14 +854,25 @@
       .bash-popup-3d-box,
       .yt-popup-3d-box,
       .hx-popup-3d-box {
-        width: min(680px, 62vmin);
-        height: min(680px, 62vmin);
         flex: 0 0 auto;
         transform: scale(0);
         transform-origin: center center;
         transition: transform 0.5s cubic-bezier(0.34, 1.15, 0.53, 1) 0.08s;
         will-change: transform;
         perspective: 900px;
+      }
+
+      .heel-popup-3d-box,
+      .bash-popup-3d-box,
+      .yt-popup-3d-box {
+        width: min(680px, 62vmin);
+        height: min(680px, 62vmin);
+      }
+
+      /* HXOUSE popup: portrait to match the lanyard shape */
+      .hx-popup-3d-box {
+        width: min(510px, 46vmin);
+        height: min(680px, 62vmin);
       }
 
       .heel-popup-overlay.is-open .heel-popup-3d-box,
@@ -1008,9 +1025,15 @@
 
         .heel-popup-3d-box,
         .bash-popup-3d-box,
-        .yt-popup-3d-box,
-        .hx-popup-3d-box {
+        .yt-popup-3d-box {
           width: min(44vw, 160px);
+          height: min(44vw, 160px);
+          transform-origin: center center;
+          flex-shrink: 0;
+        }
+
+        .hx-popup-3d-box {
+          width: min(33vw, 120px);
           height: min(44vw, 160px);
           transform-origin: center center;
           flex-shrink: 0;
