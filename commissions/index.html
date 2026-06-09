@@ -1032,9 +1032,14 @@
           flex-shrink: 0;
         }
 
+        /* HXOUSE tile: allow portrait iframe to overflow the square cell */
+        .commissions-cube-row > .commissions-tile:nth-child(8) {
+          overflow: visible !important;
+        }
+
         .hx-popup-3d-box {
-          width: min(44vw, 150px);
-          height: min(58vw, 200px);
+          width: min(62vw, 220px);
+          height: min(82vw, 293px);
           transform-origin: center center;
           flex-shrink: 0;
         }
