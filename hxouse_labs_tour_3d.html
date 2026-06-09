@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HXOUSE Labs World Tour — 3D</title>
+    <title>HXOUSE Abe Lanyard — 3D</title>
     <style>
       html {
         background: transparent;
@@ -44,119 +44,102 @@
     <div id="wrap"><canvas id="c"></canvas></div>
 
     <script src="lib/three.r128.min.js"></script>
+    <script src="lib/GLTFLoader.r128.js"></script>
     <script>
       (function () {
-        const wrap = document.getElementById("wrap");
+        const wrap   = document.getElementById("wrap");
         const canvas = document.getElementById("c");
+
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.4;
+        renderer.shadowMap.enabled = true;
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
+        const scene  = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 500);
         camera.position.set(0, 0, 5);
 
-        const group = new THREE.Group();
-        scene.add(group);
+        /* Lighting */
+        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+        const key = new THREE.DirectionalLight(0xffffff, 2.0);
+        key.position.set(4, 6, 5);
+        key.castShadow = true;
+        scene.add(key);
+        const fill = new THREE.DirectionalLight(0xffffff, 0.8);
+        fill.position.set(-4, -2, 3);
+        scene.add(fill);
+        const rim = new THREE.DirectionalLight(0xffffff, 0.5);
+        rim.position.set(0, 4, -4);
+        scene.add(rim);
 
-        const viewScale = 1.0;
-        let boxW = 4;
-        let boxH = 4;
-        const depth = 0.22;
-
-        const reduced =
-          typeof window.matchMedia === "function" &&
+        const reduced = typeof window.matchMedia === "function" &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const isPopup = typeof URLSearchParams !== "undefined" &&
           new URLSearchParams(window.location.search).has("popup");
 
         const HOVER_PERIOD_S = 3.45;
-        const yLo = -0.062;
-        const yHi = 0.095;
+        const yLo  = -0.065;
+        const yHi  =  0.095;
         const yMid = (yLo + yHi) / 2;
         const yAmp = (yHi - yLo) / 2;
-        const yawBase = 0.11;
+        const yawBase  = 0.11;
         const yawSwing = 0.055;
         let t0 = performance.now();
 
-        function fitCamera(rw, rh) {
-          camera.aspect = rw / rh;
-          const imgAspect = boxW / boxH;
-          const viewAspect = rw / rh;
-          const vFov = (camera.fov * Math.PI) / 180;
-          const margin = 0.98;
-          let dist;
-          if (viewAspect >= imgAspect) {
-            dist = boxH / 2 / Math.tan(vFov / 2) / margin;
-          } else {
-            const hFov = 2 * Math.atan(Math.tan(vFov / 2) * viewAspect);
-            dist = boxW / 2 / Math.tan(hFov / 2) / margin;
-          }
-          camera.position.z = dist / viewScale;
-          camera.position.x = 0;
-          camera.position.y = 0;
-          camera.lookAt(0, 0, 0);
-          camera.updateProjectionMatrix();
-        }
+        const group = new THREE.Group();
+        scene.add(group);
 
-        const loader = new THREE.TextureLoader();
+        const loader = new THREE.GLTFLoader();
         loader.load(
-          "hxouse-labs-tour.png",
-          function (texture) {
-            texture.encoding = THREE.sRGBEncoding;
-            texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          "hxouse-abe-lanyard.glb",
+          function (gltf) {
+            const model = gltf.scene;
 
-            const iw = texture.image.width;
-            const ih = texture.image.height;
-            const a = iw / ih;
+            /* Centre and scale to fit the view */
+            const box    = new THREE.Box3().setFromObject(model);
+            const centre = box.getCenter(new THREE.Vector3());
+            const size   = box.getSize(new THREE.Vector3());
+            model.position.sub(centre);
 
-            const longSide = 5.35;
-            if (a >= 1) {
-              boxW = longSide;
-              boxH = longSide / a;
-            } else {
-              boxH = longSide;
-              boxW = longSide * a;
-            }
+            const maxDim   = Math.max(size.x, size.y, size.z);
+            const vFov     = (camera.fov * Math.PI) / 180;
+            const fitDist  = (maxDim / 2) / Math.tan(vFov / 2) * 1.35;
+            camera.position.z = fitDist;
+            camera.updateProjectionMatrix();
 
-            /* Full opaque material — keeps the black background */
-            const frontMat = new THREE.MeshBasicMaterial({ map: texture });
-            /* Gunmetal / silver edges to match the dark industrial look */
-            const sideColor = new THREE.MeshBasicMaterial({ color: 0x2e2e2e });
-            const rimTop   = new THREE.MeshBasicMaterial({ color: 0x484848 });
-            const rimBot   = new THREE.MeshBasicMaterial({ color: 0x1a1a1a });
-            const backMat  = new THREE.MeshBasicMaterial({ color: 0x080808 });
+            /* Enable shadows on all meshes */
+            model.traverse(function (node) {
+              if (node.isMesh) {
+                node.castShadow    = true;
+                node.receiveShadow = true;
+              }
+            });
 
-            const geo  = new THREE.BoxGeometry(boxW, boxH, depth);
-            const mats = [sideColor, sideColor, rimTop, rimBot, frontMat, backMat];
-
-            const mesh = new THREE.Mesh(geo, mats);
-            group.add(mesh);
-
-            fitCamera(wrap.clientWidth, wrap.clientHeight);
-          }
+            group.add(model);
+          },
+          undefined,
+          function (err) { console.error("GLB load error:", err); }
         );
 
         function resize() {
           const rw = Math.max(1, wrap.clientWidth);
           const rh = Math.max(1, wrap.clientHeight);
           renderer.setSize(rw, rh, false);
-          if (group.children.length) fitCamera(rw, rh);
-          else {
-            camera.aspect = rw / rh;
-            camera.updateProjectionMatrix();
-          }
+          camera.aspect = rw / rh;
+          camera.updateProjectionMatrix();
         }
 
         function animate() {
           requestAnimationFrame(animate);
           if (!reduced) {
             const elapsed = (performance.now() - t0) / 1000;
-            const phase = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
+            const phase   = (2 * Math.PI * elapsed) / HOVER_PERIOD_S;
             group.position.y = yMid + yAmp * Math.cos(phase);
             if (isPopup) {
-              group.rotation.y += 0.022;
+              group.rotation.y += 0.018;
             } else {
               group.rotation.y = yawBase + yawSwing * Math.sin(phase * 0.6);
             }
