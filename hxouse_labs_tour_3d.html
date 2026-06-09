@@ -106,7 +106,7 @@
 
             const maxDim   = Math.max(size.x, size.y, size.z);
             const vFov     = (camera.fov * Math.PI) / 180;
-            const fitDist  = (maxDim / 2) / Math.tan(vFov / 2) * 0.88;
+            const fitDist  = (maxDim / 2) / Math.tan(vFov / 2) * 1.08;
             camera.position.z = fitDist;
             camera.updateProjectionMatrix();
 
