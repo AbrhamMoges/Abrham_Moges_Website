@@ -28,8 +28,8 @@
       #wrap {
         width: 100%;
         height: 100%;
-        max-width: min(480px, 78vmin);
-        max-height: min(640px, 104vmin);
+        max-width: min(340px, 58vmin);
+        max-height: min(460px, 78vmin);
         aspect-ratio: 3 / 4;
         box-sizing: border-box;
       }
@@ -106,7 +106,9 @@
 
             const maxDim   = Math.max(size.x, size.y, size.z);
             const vFov     = (camera.fov * Math.PI) / 180;
-            const fitDist  = (maxDim / 2) / Math.tan(vFov / 2) * 1.08;
+            /* Add hover amplitude so the model never clips at top/bottom during animation */
+            const hoverClearance = Math.max(Math.abs(yHi), Math.abs(yLo));
+            const fitDist  = (maxDim / 2 + hoverClearance) / Math.tan(vFov / 2) * 1.18;
             camera.position.z = fitDist;
             camera.updateProjectionMatrix();
 
