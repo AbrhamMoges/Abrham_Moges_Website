@@ -144,6 +144,13 @@
 
         if (!video) return;
 
+        /* Swap to mobile video before first play */
+        if (window.matchMedia("(max-width: 480px)").matches) {
+          var src = video.querySelector("source");
+          if (src) src.setAttribute("src", "/mobile-splash.mp4");
+          video.load();
+        }
+
         function tryPlay() {
           video.muted = true;
           var p = video.play();
