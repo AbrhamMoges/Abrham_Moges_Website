@@ -400,8 +400,9 @@
     </style>
   </head>
   <body>
-    <!-- Glass Cube Background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Glass Cube Background — use local three (avoids cdnjs DNS+TLS and
+         shares cache with the rest of the site). -->
+    <script src="../lib/three.r128.min.js"></script>
 <canvas id="glcanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></canvas>
     <canvas id="glcanvas2" style="width:100%;height:100%;z-index:-1;"></canvas>
     <canvas id="glcanvas3" style="width:100%;height:100%;z-index:-1;"></canvas>
