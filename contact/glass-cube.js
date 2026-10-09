@@ -1,14 +1,37 @@
-// Shared heavy resources — one PMREM bake / material / geometry for all cubes.
-var _sharedEnvScene = null;
-var _sharedGeometry = null;
-var _sharedMaterial = null;
-var _sharedEnvTexture = null;
-var _reduced =
-  typeof window.matchMedia === "function" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Single consolidated WebGL renderer for all 5 glass cubes.
+// Previously each cube ran its own WebGLRenderer + PMREM + transmission pass.
+// Now one renderer, one scene, one env bake, one transmission pass per frame.
+// With the cost paid only once we can afford antialias + pixelRatio=2 again.
+(function () {
+  var stage = document.getElementById("glass-stage");
+  if (!stage || typeof THREE === "undefined") return;
 
-function _buildEnvScene() {
-  if (_sharedEnvScene) return _sharedEnvScene;
+  var reduced =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var renderer = new THREE.WebGLRenderer({
+    canvas: stage,
+    alpha: true,
+    antialias: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.6;
+  renderer.physicallyCorrectLights = true;
+
+  var scene = new THREE.Scene();
+  // Camera far back + narrow FOV so cubes positioned away from center
+  // don't skew visibly — stays close to the original per-cube look.
+  var FOV = 22;
+  var CAMERA_Z = 60;
+  var camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 500);
+  camera.position.z = CAMERA_Z;
+
+  // Bake env map once
   var envScene = new THREE.Scene();
   envScene.add(
     new THREE.Mesh(
@@ -30,122 +53,106 @@ function _buildEnvScene() {
     m.position.set(s.p[0], s.p[1], s.p[2]);
     envScene.add(m);
   });
-  _sharedEnvScene = envScene;
-  return envScene;
-}
+  var pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(envScene).texture;
+  pmrem.dispose();
 
-function _getSharedGeometry(boxSize) {
-  if (!_sharedGeometry) {
-    _sharedGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-  }
-  return _sharedGeometry;
-}
-
-function _getSharedMaterial() {
-  if (!_sharedMaterial) {
-    _sharedMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      roughness: 0.03,
-      metalness: 0,
-      transmission: 0.92,
-      opacity: 1.0,
-      transparent: true,
-      ior: 1.8,
-      thickness: 2.5,
-      envMapIntensity: 3.0,
-      side: THREE.DoubleSide
-    });
-  }
-  return _sharedMaterial;
-}
-
-function makeGlassCube(canvasId, boxSize, rotX, rotY) {
-  var canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-
-  // antialias off + pixelRatio clamped to 1: these are small decorative cubes;
-  // MSAA on 5 separate contexts was the single biggest fragment-shader cost.
-  var renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
-    alpha: true,
-    antialias: false,
-    powerPreference: "low-power"
-  });
-  renderer.setPixelRatio(1);
-  renderer.setClearColor(0x000000, 0);
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.6;
-  renderer.physicallyCorrectLights = true;
-
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
-  camera.position.z = 2.8;
-
-  // Bake the PMREM env map once across all cubes. The texture is tied to the
-  // renderer that baked it, but Three uploads it lazily per renderer so sharing
-  // the result is fine — we just avoid repeating 5× the expensive bake.
-  if (!_sharedEnvTexture) {
-    var pmrem = new THREE.PMREMGenerator(renderer);
-    _sharedEnvTexture = pmrem.fromScene(_buildEnvScene()).texture;
-    pmrem.dispose();
-  }
-  scene.environment = _sharedEnvTexture;
-
-  var pt1 = new THREE.PointLight(0xffffff, 2.5, 20);
-  pt1.position.set(3, 4, 5);
+  // Shared lights
+  var pt1 = new THREE.PointLight(0xffffff, 2.5, 40);
+  pt1.position.set(6, 8, 10);
   scene.add(pt1);
-
-  var pt2 = new THREE.PointLight(0xffffff, 2.0, 20);
-  pt2.position.set(-4, -2, 3);
+  var pt2 = new THREE.PointLight(0xffffff, 2.0, 40);
+  pt2.position.set(-8, -4, 6);
   scene.add(pt2);
-
   scene.add(new THREE.AmbientLight(0xffffff, 1.0));
 
-  var cube = new THREE.Mesh(_getSharedGeometry(boxSize), _getSharedMaterial());
-  scene.add(cube);
-  cube.scale.setScalar(0);
-  var startTime = performance.now();
+  // Shared material + geometry
+  var geom = new THREE.BoxGeometry(1, 1, 1);
+  var mat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    roughness: 0.03,
+    metalness: 0,
+    transmission: 0.92,
+    opacity: 1.0,
+    transparent: true,
+    ior: 1.8,
+    thickness: 2.5,
+    envMapIntensity: 3.0,
+    side: THREE.DoubleSide
+  });
 
-  function resize() {
-    var w = canvas.offsetWidth || canvas.clientWidth || 300;
-    var h = canvas.offsetHeight || canvas.clientHeight || 300;
+  // Original cube filled ~23.55% of its 28vmin canvas (0.48 world / 2.038 world
+  // at fov 40, camera z 2.8). Keep the same visual size here.
+  var CUBE_FILL_RATIO = 0.2355;
+
+  var slots = [
+    { id: "glcanvas", rotX: 0.0015, rotY: 0.0025 },
+    { id: "glcanvas2", rotX: -0.002, rotY: -0.0018 },
+    { id: "glcanvas3", rotX: 0.0017, rotY: 0.0022 },
+    { id: "glcanvas4", rotX: -0.0019, rotY: -0.0021 },
+    { id: "glcanvas5", rotX: 0.0016, rotY: 0.002 }
+  ]
+    .map(function (cfg) {
+      var ph = document.getElementById(cfg.id);
+      if (!ph) return null;
+      var mesh = new THREE.Mesh(geom, mat);
+      mesh.scale.setScalar(0);
+      scene.add(mesh);
+      return {
+        placeholder: ph,
+        mesh: mesh,
+        rotX: cfg.rotX,
+        rotY: cfg.rotY,
+        targetScale: 0
+      };
+    })
+    .filter(Boolean);
+
+  function layout() {
+    var w = window.innerWidth;
+    var h = window.innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-  }
-  var resizeHandler = function () {
-    resize();
-  };
-  window.addEventListener("resize", resizeHandler, { passive: true });
-  requestAnimationFrame(resize);
 
-  // Pause the render loop when the canvas is off-screen or the tab is hidden.
+    var vFov = (FOV * Math.PI) / 180;
+    var worldH = 2 * Math.tan(vFov / 2) * CAMERA_Z;
+    var pxToWorld = worldH / h;
+
+    slots.forEach(function (s) {
+      var r = s.placeholder.getBoundingClientRect();
+      var cx = r.left + r.width / 2;
+      var cy = r.top + r.height / 2;
+      s.mesh.position.x = (cx - w / 2) * pxToWorld;
+      s.mesh.position.y = -(cy - h / 2) * pxToWorld;
+      s.targetScale = r.width * pxToWorld * CUBE_FILL_RATIO;
+    });
+  }
+  window.addEventListener("resize", layout, { passive: true });
+  // Defer first layout so CSS has applied
+  requestAnimationFrame(layout);
+
   var visible = true;
-  if (typeof IntersectionObserver === "function") {
-    var io = new IntersectionObserver(
-      function (entries) {
-        visible = entries[0].isIntersecting;
-      },
-      { rootMargin: "100px" }
-    );
-    io.observe(canvas);
-  }
+  document.addEventListener("visibilitychange", function () {
+    visible = !document.hidden;
+  });
 
+  var startTime = performance.now();
   var rafId = 0;
   function animate() {
     rafId = requestAnimationFrame(animate);
-    if (!visible || document.hidden) return;
+    if (!visible) return;
     var elapsed = (performance.now() - startTime) / 1200;
-    if (elapsed < 1) {
-      cube.scale.setScalar(1 - Math.pow(1 - Math.min(elapsed, 1), 3));
-    } else if (cube.scale.x < 1) {
-      cube.scale.setScalar(1);
-    }
-    if (!_reduced) {
-      cube.rotation.x += rotX;
-      cube.rotation.y += rotY;
-    }
+    var k =
+      elapsed < 1 ? 1 - Math.pow(1 - Math.min(elapsed, 1), 3) : 1;
+    slots.forEach(function (s) {
+      if (!s.targetScale) return;
+      s.mesh.scale.setScalar(s.targetScale * k);
+      if (!reduced) {
+        s.mesh.rotation.x += s.rotX;
+        s.mesh.rotation.y += s.rotY;
+      }
+    });
     renderer.render(scene, camera);
   }
   animate();
@@ -153,28 +160,9 @@ function makeGlassCube(canvasId, boxSize, rotX, rotY) {
   window.addEventListener("pagehide", function () {
     try {
       cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resizeHandler);
       renderer.dispose();
+      geom.dispose();
+      mat.dispose();
     } catch (e) {}
   });
-}
-
-// Stagger construction so 5 WebGL contexts don't initialize on the same frame.
-(function initCubes() {
-  var configs = [
-    ["glcanvas", 0.48, 0.0015, 0.0025],
-    ["glcanvas2", 0.48, -0.002, -0.0018],
-    ["glcanvas3", 0.48, 0.0017, 0.0022],
-    ["glcanvas4", 0.48, -0.0019, -0.0021],
-    ["glcanvas5", 0.48, 0.0016, 0.002]
-  ];
-  var i = 0;
-  function next() {
-    if (i >= configs.length) return;
-    var cfg = configs[i++];
-    makeGlassCube(cfg[0], cfg[1], cfg[2], cfg[3]);
-    // ~60ms gap gives each context a frame to initialize before the next.
-    setTimeout(next, 60);
-  }
-  next();
 })();
