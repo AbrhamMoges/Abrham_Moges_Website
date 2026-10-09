@@ -1616,6 +1616,40 @@
     </div>
 
     <script>
+      // Tap-vs-scroll guard: only fire onTap for touches that stay within 10px
+      // and finish within 500ms. Prevents accidental popups when the user is
+      // scrolling the tile grid on mobile.
+      window.__wireTileTap = function (tile, onTap) {
+        var startX = 0, startY = 0, startT = 0, moved = false, touched = false;
+        var SLOP = 10, MAX_MS = 500;
+        tile.addEventListener("touchstart", function (e) {
+          var t = e.touches[0];
+          if (!t) return;
+          startX = t.clientX;
+          startY = t.clientY;
+          startT = Date.now();
+          moved = false;
+        }, { passive: true });
+        tile.addEventListener("touchmove", function (e) {
+          var t = e.touches[0];
+          if (!t) return;
+          if (Math.abs(t.clientX - startX) > SLOP ||
+              Math.abs(t.clientY - startY) > SLOP) {
+            moved = true;
+          }
+        }, { passive: true });
+        tile.addEventListener("touchend", function (e) {
+          touched = true;
+          setTimeout(function () { touched = false; }, 600);
+          if (moved || Date.now() - startT > MAX_MS) return;
+          e.preventDefault();
+          onTap();
+        });
+        tile.addEventListener("click", function () {
+          if (!touched) onTap();
+        });
+      };
+
       (function () {
         var body = document.body;
         var reduced =
@@ -1862,16 +1896,7 @@
           overlay.setAttribute("aria-hidden", "true");
         }
 
-        var trTapped = false;
-        firstTile.addEventListener("touchend", function (e) {
-          trTapped = true;
-          e.preventDefault();
-          openPopup();
-          setTimeout(function () { trTapped = false; }, 600);
-        });
-        firstTile.addEventListener("click", function () {
-          if (!trTapped) openPopup();
-        });
+        window.__wireTileTap(firstTile, openPopup);
 
         overlay.addEventListener("click", function (e) {
           if (!e.target.closest("#tr-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
@@ -1915,16 +1940,7 @@
           overlay.setAttribute("aria-hidden", "true");
         }
 
-        var parkTapped = false;
-        secondTile.addEventListener("touchend", function (e) {
-          parkTapped = true;
-          e.preventDefault();
-          openPopup();
-          setTimeout(function () { parkTapped = false; }, 600);
-        });
-        secondTile.addEventListener("click", function () {
-          if (!parkTapped) openPopup();
-        });
+        window.__wireTileTap(secondTile, openPopup);
 
         overlay.addEventListener("click", function (e) {
           if (!e.target.closest("#park-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
@@ -1973,16 +1989,7 @@
           if (budIframe) budIframe.src = "";
         }
 
-        var budTapped = false;
-        thirdTile.addEventListener("touchend", function (e) {
-          budTapped = true;
-          e.preventDefault();
-          openPopup();
-          setTimeout(function () { budTapped = false; }, 600);
-        });
-        thirdTile.addEventListener("click", function () {
-          if (!budTapped) openPopup();
-        });
+        window.__wireTileTap(thirdTile, openPopup);
 
         overlay.addEventListener("click", function (e) {
           if (!e.target.closest("#bud-popup-box") && !e.target.closest(".ps2-nav")) closePopup();
@@ -2027,16 +2034,7 @@
           if (crIframe) crIframe.src = "";
         }
 
-        var crTapped = false;
-        fourthTile.addEventListener("touchend", function (e) {
-          crTapped = true;
-          e.preventDefault();
-          openPopup();
-          setTimeout(function () { crTapped = false; }, 600);
-        });
-        fourthTile.addEventListener("click", function () {
-          if (!crTapped) openPopup();
-        });
+        window.__wireTileTap(fourthTile, openPopup);
 
         overlay.addEventListener("click", function (e) {
           if (!e.target.closest(".cr-popup-3d-box") && !e.target.closest(".ps2-nav")) closePopup();
@@ -2063,9 +2061,7 @@
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
         function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
-        var tapped = false;
-        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
-        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        window.__wireTileTap(tile, open);
         overlay.addEventListener("click", function(e){ if(!e.target.closest(".heel-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
         if (backBtn) backBtn.addEventListener("click", close);
         var heelNext = document.getElementById("heel-ps2-next-btn");
@@ -2082,9 +2078,7 @@
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
         function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
-        var tapped = false;
-        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
-        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        window.__wireTileTap(tile, open);
         overlay.addEventListener("click", function(e){ if(!e.target.closest(".bash-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
         if (backBtn) backBtn.addEventListener("click", close);
         var bashNext = document.getElementById("bash-ps2-next-btn");
@@ -2101,9 +2095,7 @@
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
         function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
-        var tapped = false;
-        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
-        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        window.__wireTileTap(tile, open);
         overlay.addEventListener("click", function(e){ if(!e.target.closest(".yt-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
         if (backBtn) backBtn.addEventListener("click", close);
         var ytNext = document.getElementById("yt-ps2-next-btn");
@@ -2120,9 +2112,7 @@
         if (!tile || !overlay) return;
         function open()  { if (iframe && (!iframe.src || iframe.src === window.location.href)) iframe.src = src; overlay.classList.add("is-open"); overlay.setAttribute("aria-hidden","false"); }
         function close() { overlay.classList.remove("is-open"); overlay.setAttribute("aria-hidden","true"); if (iframe) iframe.src = ""; }
-        var tapped = false;
-        tile.addEventListener("touchend", function(e){ tapped=true; e.preventDefault(); open(); setTimeout(function(){ tapped=false; },600); });
-        tile.addEventListener("click", function(){ if(!tapped) open(); });
+        window.__wireTileTap(tile, open);
         overlay.addEventListener("click", function(e){ if(!e.target.closest(".hx-popup-3d-box") && !e.target.closest(".ps2-nav")) close(); });
         if (backBtn) backBtn.addEventListener("click", close);
         var hxNext = document.getElementById("hx-ps2-next-btn");
