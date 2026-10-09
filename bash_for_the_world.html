@@ -230,6 +230,19 @@
         }
         resize();
         animate();
+
+        window.addEventListener("pagehide", function () {
+          try {
+            renderer.dispose();
+            scene.traverse(function (o) {
+              if (o.geometry) o.geometry.dispose();
+              if (o.material) {
+                if (Array.isArray(o.material)) o.material.forEach(function (m) { m.dispose(); });
+                else o.material.dispose();
+              }
+            });
+          } catch (e) {}
+        });
       })();
     </script>
   </body>

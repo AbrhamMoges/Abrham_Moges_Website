@@ -620,11 +620,16 @@
         var reduced = typeof window.matchMedia === "function" &&
           window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (!reduced) {
-          (function tick() {
-            seed = (seed + 1) % 200;
-            turb.setAttribute("seed", seed);
+          var last = 0;
+          var INTERVAL = 100; // throttle grain reseed to ~10fps instead of 60fps
+          (function tick(t) {
+            if (!last || t - last >= INTERVAL) {
+              seed = (seed + 1) % 200;
+              turb.setAttribute("seed", seed);
+              last = t;
+            }
             requestAnimationFrame(tick);
-          })();
+          })(0);
         }
       })();
     </script>
