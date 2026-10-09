@@ -969,11 +969,27 @@
           font-size: clamp(14px, 4.5vw, 20px);
         }
 
-        /* Keep position:fixed on main — just reflow tiles into 2 columns.
-           All 6 tiles (~182px each) fit within iPhone viewport height. */
+        /* Allow vertical scroll on mobile — 8 tiles in a 2-column grid
+           don't fit inside a single iPhone viewport. The fixed corner
+           label + Back link + footer stay pinned via position: fixed. */
+        html {
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        body {
+          overflow-y: auto;
+          overflow-x: hidden;
+          /* Breathing room above the fixed footer at the bottom of the viewport */
+          padding-bottom: calc(clamp(1rem, 4vw, 2rem) + 3.5rem);
+        }
+
+        /* Switch main from position:fixed → normal flow so all tiles
+           contribute to document height and the page becomes scrollable. */
         .commissions-main {
-          left: 0.5rem;
-          right: 0.5rem;
+          position: static;
+          left: auto;
+          right: auto;
+          margin: calc(var(--commissions-corner-top) + 2.25rem) 0.5rem 0;
           overflow: visible;
         }
 
