@@ -50,13 +50,16 @@
         const wrap   = document.getElementById("wrap");
         const canvas = document.getElementById("c");
 
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        // Tile iframes render at 300×300; expensive flags only pay off in popup mode.
+        const _popup = typeof URLSearchParams !== "undefined" &&
+          new URLSearchParams(window.location.search).has("popup");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: _popup, alpha: true });
         renderer.setClearColor(0x000000, 0);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(_popup ? Math.min(window.devicePixelRatio, 2) : 1);
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.4;
-        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.enabled = _popup;
 
         const scene  = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 500);

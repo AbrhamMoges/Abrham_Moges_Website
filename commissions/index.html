@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Commissions — Abrham Moges</title>
+    <!-- Warm the cache for the shared Three.js runtime so the first tile iframe
+         doesn't block on the ~589 KB script fetch. -->
+    <link rel="preload" href="../lib/three.r128.min.js" as="script" crossorigin />
+    <link rel="preload" href="../lib/GLTFLoader.r128.js" as="script" crossorigin />
     <style>
       :root {
         color-scheme: light;
@@ -1643,23 +1647,67 @@
           startCommissionIntro();
         }
 
-        // Lazy-load tile iframes only when they scroll near the viewport. Keeps
-        // WebGL contexts from spinning up until needed.
+        // Hydrate tile iframes in a staggered sequence so 8 WebGL contexts don't
+        // spin up on the same frame (which stalls the first paint). Each tile
+        // waits briefly for the previous one to finish loading before starting.
+        // Lazy-load with IntersectionObserver for anything below the fold.
         function hydrateTileIframes() {
-          var tiles = document.querySelectorAll(".commissions-tile iframe[data-src]");
+          var tiles = Array.prototype.slice.call(
+            document.querySelectorAll(".commissions-tile iframe[data-src]")
+          );
           if (!tiles.length) return;
+
+          var STAGGER_MS = 90;      // minimum gap between tile mounts
+          var MAX_WAIT_MS = 1200;   // give up waiting on 'load' after this
+          var queue = [];
+          var pumping = false;
+
+          function mount(frame) {
+            return new Promise(function (resolve) {
+              if (!frame.dataset.src) return resolve();
+              var done = false;
+              var finish = function () {
+                if (done) return;
+                done = true;
+                resolve();
+              };
+              frame.addEventListener("load", finish, { once: true });
+              window.setTimeout(finish, MAX_WAIT_MS);
+              frame.src = frame.dataset.src;
+              delete frame.dataset.src;
+            });
+          }
+
+          function pump() {
+            if (pumping) return;
+            pumping = true;
+            (function next() {
+              var frame = queue.shift();
+              if (!frame) { pumping = false; return; }
+              mount(frame).then(function () {
+                window.setTimeout(next, STAGGER_MS);
+              });
+            })();
+          }
+
+          function enqueue(frame) {
+            if (!frame.dataset.src || queue.indexOf(frame) !== -1) return;
+            queue.push(frame);
+            pump();
+          }
+
           if (typeof IntersectionObserver !== "function") {
-            tiles.forEach(function (f) { f.src = f.dataset.src; delete f.dataset.src; });
+            tiles.forEach(enqueue);
             return;
           }
+
           var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
               if (!entry.isIntersecting) return;
-              var f = entry.target;
-              if (f.dataset.src) { f.src = f.dataset.src; delete f.dataset.src; }
-              io.unobserve(f);
+              enqueue(entry.target);
+              io.unobserve(entry.target);
             });
-          }, { rootMargin: "200px" });
+          }, { rootMargin: "400px" });
           tiles.forEach(function (f) { io.observe(f); });
         }
         if (document.readyState === "loading") {

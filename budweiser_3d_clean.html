@@ -48,13 +48,15 @@
       const wrap = document.getElementById("wrap");
       const canvas = document.getElementById("c");
 
+      const _popup = typeof URLSearchParams !== "undefined" &&
+        new URLSearchParams(window.location.search).has("popup");
       const renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias: true,
+        antialias: _popup,
         alpha: true,
       });
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(_popup ? Math.min(window.devicePixelRatio, 2) : 1);
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);

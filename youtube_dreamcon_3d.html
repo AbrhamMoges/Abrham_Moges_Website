@@ -48,9 +48,11 @@
       (function () {
         const wrap = document.getElementById("wrap");
         const canvas = document.getElementById("c");
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        const _popup = typeof URLSearchParams !== "undefined" &&
+          new URLSearchParams(window.location.search).has("popup");
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: _popup, alpha: true });
         renderer.setClearColor(0x000000, 0);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(_popup ? Math.min(window.devicePixelRatio, 2) : 1);
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         const scene = new THREE.Scene();
