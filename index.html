@@ -102,7 +102,7 @@
       <video
         id="splash-video"
         poster="/ps2-startup-poster.jpg"
-        preload="auto"
+        preload="metadata"
         autoplay
         muted
         playsinline
@@ -110,7 +110,7 @@
         disablePictureInPicture
         aria-label="Intro video. Skips to home when finished, or click while playing to skip."
       >
-        <source src="/desktop-splash.mp4" type="video/mp4" />
+        <!-- src set by JS to avoid double-fetch on mobile breakpoint -->
       </video>
     </main>
     <div id="splash-error" role="alert"></div>
@@ -144,12 +144,21 @@
 
         if (!video) return;
 
-        /* Swap to mobile video before first play */
-        if (window.matchMedia("(max-width: 480px)").matches) {
-          var src = video.querySelector("source");
-          if (src) src.setAttribute("src", "/mobile-splash.mp4");
-          video.load();
+        // Skip the video entirely for reduced-motion or data-saver users
+        var conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+        var isSlow = conn && (conn.saveData || /^(slow-)?2g$/.test(conn.effectiveType || ""));
+        if (prefersReducedMotion() || isSlow) {
+          goNext();
+          return;
         }
+
+        /* Pick the right source once (no default src in HTML to avoid double fetch) */
+        var isMobile = window.matchMedia("(max-width: 480px)").matches;
+        var source = document.createElement("source");
+        source.type = "video/mp4";
+        source.src = isMobile ? "/mobile-splash.mp4" : "/desktop-splash.mp4";
+        video.appendChild(source);
+        video.load();
 
         function tryPlay() {
           video.muted = true;
